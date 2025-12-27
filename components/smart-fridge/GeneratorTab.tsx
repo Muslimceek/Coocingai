@@ -31,7 +31,6 @@ const GeneratorTab: React.FC<GeneratorTabProps> = ({
   savedRecipeIds
 }) => {
   const [inputValue, setInputValue] = useState('');
-  // Simple defaults for filters
   const [filters, setFilters] = useState({ cuisine: 'Any', mealType: 'Any', mood: 'Any' });
 
   const quickIngredients = [
@@ -51,122 +50,141 @@ const GeneratorTab: React.FC<GeneratorTabProps> = ({
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-8">
       
-      {/* 1. MAGIC INPUT CONTAINER */}
-      <div className="bg-white rounded-[2rem] p-5 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] border border-stone-50 relative overflow-hidden group">
+      {/* 1. THE MAGIC INPUT (Glassmorphic Molecule) */}
+      <div className="relative group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-rose-200 via-orange-200 to-amber-200 rounded-[2.5rem] blur opacity-25 group-focus-within:opacity-75 transition duration-1000 group-hover:duration-200" />
           
-          {/* Header Icon */}
-          <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-tr from-rose-400 to-orange-400 rounded-xl flex items-center justify-center shadow-lg shadow-rose-100">
-                  <Wand2 className="text-white" size={20} />
-              </div>
-              <div>
-                  <h3 className="font-editorial italic text-2xl text-stone-900 leading-none">{t('gen_ai_chef')}</h3>
-                  <p className="text-[10px] font-brutal uppercase tracking-widest text-stone-400">{t('gen_create_masterpiece')}</p>
-              </div>
-          </div>
-
-          {/* Interactive Input Area */}
-          <div className="bg-stone-50 rounded-3xl p-4 transition-all focus-within:bg-white focus-within:ring-2 ring-rose-100">
+          <div className="relative bg-white rounded-[2.5rem] p-6 shadow-xl shadow-stone-200/50 border border-white/50">
               
-              {/* Chip Cloud */}
-              <div className="flex flex-wrap gap-2 mb-3 min-h-[30px]">
-                  <AnimatePresence>
-                      {ingredients.length > 0 ? (
-                          ingredients.map((ing) => (
-                              <motion.span
-                                  key={ing}
-                                  initial={{ scale: 0.8, opacity: 0 }}
-                                  animate={{ scale: 1, opacity: 1 }}
-                                  exit={{ scale: 0.5, opacity: 0 }}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-stone-200 rounded-full text-xs font-bold text-stone-700 shadow-sm"
-                              >
-                                  {ing}
-                                  <button onClick={() => removeIngredient(ing)} className="p-0.5 rounded-full hover:bg-stone-100 text-stone-400">
-                                      <X size={10} />
-                                  </button>
-                              </motion.span>
-                          ))
-                      ) : (
-                          <span className="text-stone-300 text-sm italic pl-1 flex items-center gap-2">
-                              <Search size={14} /> {t('fridge_empty')}
-                          </span>
-                      )}
-                  </AnimatePresence>
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-rose-50 rounded-full flex items-center justify-center">
+                      <Wand2 className="text-rose-500" size={20} />
+                  </div>
+                  <div>
+                      <h3 className="font-editorial italic text-2xl text-stone-900 leading-none">{t('gen_ai_chef')}</h3>
+                      <p className="text-[10px] font-brutal uppercase tracking-widest text-stone-400 mt-1">{t('gen_create_masterpiece')}</p>
+                  </div>
               </div>
 
-              {/* Input Field + FAB */}
-              <div className="relative flex items-center">
+              {/* Input Area */}
+              <div className="bg-stone-50/50 rounded-2xl p-2 flex items-center gap-2 border border-stone-100 focus-within:bg-white focus-within:ring-2 focus-within:ring-rose-100 transition-all">
                   <input 
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
                       placeholder={t('fridge_placeholder')}
-                      className="w-full bg-transparent border-none outline-none text-lg font-editorial italic text-stone-800 placeholder:text-stone-300 pr-12"
+                      className="flex-1 bg-transparent border-none outline-none text-lg font-editorial italic text-stone-800 placeholder:text-stone-300 px-4 h-12"
                   />
                   <button 
                       onClick={handleAdd}
-                      className="absolute right-0 w-10 h-10 bg-stone-900 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-105 active:scale-95 transition-transform"
+                      className="w-12 h-12 bg-stone-900 rounded-xl flex items-center justify-center text-white shadow-lg shadow-stone-900/20 hover:scale-105 active:scale-95 transition-transform"
                   >
-                      <Plus size={20} />
+                      <Plus size={24} />
                   </button>
               </div>
-          </div>
 
-          {/* Quick Add Scroll */}
-          <div className="mt-4 pt-4 border-t border-stone-100">
-              <p className="text-[9px] font-brutal font-bold text-stone-300 uppercase tracking-widest mb-2">{t('fridge_quick_add')}</p>
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                  {quickIngredients.map((item) => (
-                      <button
-                          key={item.label}
-                          onClick={() => addIngredient(item.label)}
-                          className="flex items-center gap-1 px-3 py-2 bg-stone-50 rounded-xl text-xs font-bold text-stone-600 border border-stone-100 hover:bg-rose-50 hover:border-rose-100 hover:text-rose-500 whitespace-nowrap transition-colors"
-                      >
-                          <span>{item.icon}</span> {item.label}
-                      </button>
-                  ))}
+              {/* Quick Suggestions (Horizontal Scroll) */}
+              <div className="mt-6">
+                  <p className="text-[9px] font-brutal font-bold text-stone-300 uppercase tracking-widest mb-3 pl-1">{t('fridge_quick_add')}</p>
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mask-gradient-right">
+                      {quickIngredients.map((item) => (
+                          <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              key={item.label}
+                              onClick={() => addIngredient(item.label)}
+                              className="flex items-center gap-2 px-4 py-2.5 bg-white rounded-xl text-xs font-bold text-stone-600 border border-stone-100 shadow-sm hover:shadow-md hover:border-rose-100 whitespace-nowrap transition-all"
+                          >
+                              <span className="text-sm">{item.icon}</span> {item.label}
+                          </motion.button>
+                      ))}
+                  </div>
               </div>
+
           </div>
       </div>
 
-      {/* 2. MAIN ACTION: FLOATING GENERATE BUTTON */}
-      <div className="relative z-10">
+      {/* 2. INGREDIENT CLOUD (Spatial UI) */}
+      <AnimatePresence>
+          {ingredients.length > 0 && (
+              <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-3"
+              >
+                  <div className="flex justify-between items-end px-2">
+                       <span className="text-[10px] font-brutal font-bold text-stone-400 uppercase tracking-widest">Your Basket ({ingredients.length})</span>
+                       <button onClick={() => {}} className="text-[10px] font-bold text-rose-500 hover:underline">Clear All</button>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                      <AnimatePresence>
+                          {ingredients.map((ing) => (
+                              <motion.div
+                                  key={ing}
+                                  layout
+                                  initial={{ scale: 0.8, opacity: 0 }}
+                                  animate={{ scale: 1, opacity: 1 }}
+                                  exit={{ scale: 0.5, opacity: 0 }}
+                                  className="group relative"
+                              >
+                                  <div className="pl-4 pr-10 py-3 bg-white border border-stone-200 rounded-2xl text-sm font-bold text-stone-700 shadow-sm flex items-center gap-2 relative z-10">
+                                      {ing}
+                                      <button 
+                                          onClick={() => removeIngredient(ing)}
+                                          className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-stone-100 text-stone-400 flex items-center justify-center hover:bg-rose-100 hover:text-rose-500 transition-colors"
+                                      >
+                                          <X size={12} />
+                                      </button>
+                                  </div>
+                                  {/* Shadow Layer for Depth */}
+                                  <div className="absolute inset-0 bg-stone-200 rounded-2xl transform translate-y-1 translate-x-1 -z-10 group-hover:translate-y-1.5 group-hover:translate-x-1.5 transition-transform" />
+                              </motion.div>
+                          ))}
+                      </AnimatePresence>
+                  </div>
+              </motion.div>
+          )}
+      </AnimatePresence>
+
+      {/* 3. GENERATE BUTTON (Liquid Animation) */}
+      <div className="sticky bottom-4 z-30 pt-4">
           <button
               onClick={() => onGenerate(filters)}
               disabled={ingredients.length === 0 || loading}
-              className={`w-full py-5 rounded-[2rem] relative overflow-hidden group shadow-2xl transition-all active:scale-95 ${
+              className={`w-full h-16 rounded-[2rem] relative overflow-hidden transition-all duration-500 ${
                   ingredients.length === 0 
-                  ? 'bg-stone-100 text-stone-400 cursor-not-allowed' 
-                  : 'bg-stone-900 text-white hover:shadow-rose-200 hover:-translate-y-1'
+                  ? 'bg-stone-200 cursor-not-allowed opacity-50 scale-95' 
+                  : 'bg-stone-900 shadow-2xl shadow-stone-900/30 hover:scale-[1.02] active:scale-95'
               }`}
           >
-              {loading ? (
-                  <div className="flex items-center justify-center gap-2">
-                      <Loader2 className="animate-spin text-rose-400" size={24} />
-                      <span className="font-brutal font-bold uppercase tracking-widest text-xs animate-pulse">{t('gen_thinking')}</span>
-                  </div>
-              ) : (
-                  <div className="flex items-center justify-between px-8">
-                      <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                              <Sparkles size={18} className="text-amber-300 fill-amber-300" />
-                          </div>
-                          <div className="text-left">
-                              <span className="block font-brutal font-bold uppercase tracking-widest text-xs opacity-70">Ready?</span>
-                              <span className="block font-editorial italic text-xl leading-none">{t('gen_create_btn')}</span>
-                          </div>
-                      </div>
-                      <div className="w-10 h-10 rounded-full bg-rose-500 flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <ArrowRight size={20} />
-                      </div>
-                  </div>
-              )}
+              {/* Liquid Background Gradient */}
+              <div className={`absolute inset-0 bg-gradient-to-r from-rose-500 via-orange-500 to-amber-500 opacity-0 transition-opacity duration-500 ${ingredients.length > 0 && !loading ? 'opacity-100' : ''}`} />
               
-              {/* Animated Gradient Shine */}
-              {!loading && ingredients.length > 0 && (
-                  <div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:animate-shine skew-x-12" />
+              {/* Loading Animation Layer */}
+              {loading && (
+                   <div className="absolute inset-0 bg-stone-900 flex items-center justify-center gap-3">
+                       <Loader2 className="animate-spin text-rose-500" size={24} />
+                       <span className="font-brutal font-bold uppercase tracking-widest text-xs text-white animate-pulse">{t('gen_thinking')}</span>
+                   </div>
+              )}
+
+              {/* Content Layer */}
+              {!loading && (
+                  <div className="absolute inset-0 flex items-center justify-between px-8 text-white">
+                      <div className="flex items-center gap-3">
+                          <Sparkles size={20} className={ingredients.length > 0 ? "animate-pulse" : ""} />
+                          <div className="flex flex-col items-start">
+                              <span className="font-editorial italic text-xl leading-none">{t('gen_create_btn')}</span>
+                              {ingredients.length > 0 && <span className="text-[9px] font-brutal uppercase opacity-80">{ingredients.length} items selected</span>}
+                          </div>
+                      </div>
+                      <ArrowRight size={24} />
+                  </div>
               )}
           </button>
       </div>
@@ -175,10 +193,10 @@ const GeneratorTab: React.FC<GeneratorTabProps> = ({
       <AnimatePresence>
           {recipe && (
               <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="pb-24"
+                  className="pb-24 pt-4"
               >
                  <RecipeCard 
                       recipe={recipe} 

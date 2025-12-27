@@ -6,7 +6,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useUser } from '../contexts/UserContext';
 import { PantryItem } from '../types';
 
-// Import sub-components
+// Explicit Imports to prevent "default export" errors if bundler configuration is strict
 import PantryHeader from './pantry/PantryHeader';
 import PantryFilters from './pantry/PantryFilters';
 import PantryList from './pantry/PantryList';
@@ -79,7 +79,8 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
          return d !== null && d < 0;
      }).length;
      
-     const ecoScore = Math.max(0, 100 - (expired * 10));
+     // Eco Score Calculation
+     const ecoScore = Math.max(0, 100 - (expired * 15) - (expiring * 5));
      return { total, expiring, expired, ecoScore };
   }, [user.pantry]);
 
@@ -129,6 +130,7 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
   return (
     <div className="min-h-screen pb-32 pt-6 px-4 md:px-6 relative font-sans">
       
+      {/* Dashboard Header */}
       <PantryHeader 
         stats={stats} 
         onAddClick={handleOpenAdd}
@@ -136,11 +138,11 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
         onViewChange={(mode) => {
             vibrate();
             setViewMode(mode);
-            // Reset category filter when switching modes for clarity
             if(mode === 'expiring') setFilterCategory('all');
         }}
       />
 
+      {/* Filter Bar */}
       <PantryFilters 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -148,17 +150,19 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
         setFilterCategory={(cat) => {
             vibrate();
             setFilterCategory(cat);
-            setViewMode('all'); // Switching category resets "Expiring Only" mode
+            setViewMode('all');
         }}
         activeView={viewMode}
       />
 
+      {/* Item Grid */}
       <PantryList 
         items={processedItems}
         onItemClick={handleOpenEdit}
       />
 
-      {/* Floating Cook Bar */}
+      {/* Floating 'Cook with Pantry' Action Button */}
+      {/* Logic: Only show if we have items and are in default view */}
       <AnimatePresence>
           {user.pantry.length > 2 && viewMode === 'all' && (
              <motion.div 
@@ -169,15 +173,17 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
              >
                 <button 
                    onClick={() => { vibrate(); onCookWithPantry(user.pantry.map(i => i.name)); }}
-                   className="pointer-events-auto w-full max-w-md bg-stone-900/90 backdrop-blur-md text-white p-4 rounded-[2rem] shadow-2xl flex items-center justify-between group border border-white/20 transition-all hover:scale-[1.02] active:scale-95"
+                   className="pointer-events-auto w-full max-w-md bg-stone-900/90 backdrop-blur-md text-white p-4 rounded-[2rem] shadow-2xl flex items-center justify-between group border border-white/20 transition-all hover:scale-[1.02] active:scale-95 hover:bg-stone-800"
                 >
                    <div className="flex items-center gap-4">
-                       <div className="w-10 h-10 rounded-full bg-rose-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                       <div className="w-10 h-10 rounded-full bg-rose-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-rose-900/40">
                           <Utensils size={18} />
                        </div>
                        <div className="text-left">
                            <span className="block text-sm font-bold">{t('pantry_cook_btn')}</span>
-                           <span className="text-[10px] text-stone-400 uppercase tracking-wider">{user.pantry.length} {t('explore_items')}</span>
+                           <span className="text-[10px] text-stone-400 uppercase tracking-wider font-brutal">
+                              {user.pantry.length} {t('explore_items')} Available
+                           </span>
                        </div>
                    </div>
                    <div className="bg-white/10 rounded-full p-2 group-hover:bg-white/20 transition-colors">

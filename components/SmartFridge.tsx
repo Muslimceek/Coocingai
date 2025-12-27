@@ -114,102 +114,113 @@ const SmartFridge: React.FC<SmartFridgeProps> = ({ initialIngredients, clearInit
   const currentLang = languages.find(l => l.code === language);
 
   return (
-    <div className="min-h-screen pt-4 pb-28 px-4 md:px-6 max-w-lg mx-auto relative animate-in fade-in duration-500 font-sans" onClick={() => setShowLangMenu(false)}>
+    <div className="min-h-screen pb-28 font-sans relative" onClick={() => setShowLangMenu(false)}>
       
-      {/* --- HEADER: 2025 Style --- */}
-      <div className="bg-gradient-to-b from-rose-50 to-white/0 rounded-[2.5rem] p-6 mb-6">
-          <div className="flex justify-between items-start mb-4">
-              <div className="flex flex-col">
-                  {/* Micro-Interaction: Label */}
-                  <span className="text-[10px] font-brutal font-black text-rose-500 uppercase tracking-[0.2em] mb-1">
-                      {t('fridge_title')}
-                  </span>
-                  
-                  {/* Large Typography Greeting */}
-                  <h1 className="text-4xl font-editorial italic text-stone-900 leading-[1.1]">
-                      {timeGreeting},<br />
-                      <span className="underline decoration-rose-300 decoration-2 underline-offset-4">{user.name.split(' ')[0]}</span>!
-                  </h1>
-                  <p className="text-stone-400 text-xs font-medium mt-2 max-w-[200px] leading-relaxed">
-                      {t('fridge_subtitle')}
-                  </p>
-              </div>
+      {/* --- 2025 STICKY GLASS HEADER --- */}
+      <header className="sticky top-0 z-40 px-4 md:px-6 pt-4 pb-2 bg-[#F9F8F6]/80 backdrop-blur-xl border-b border-white/20 transition-all duration-500">
+        <div className="max-w-lg mx-auto">
+            
+            {/* Top Row: Greetings & Profile */}
+            <div className="flex justify-between items-start mb-4">
+                <div className="flex flex-col">
+                    <motion.span 
+                        initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                        className="text-[10px] font-brutal font-black text-rose-500 uppercase tracking-[0.2em] mb-1"
+                    >
+                        {t('fridge_title')}
+                    </motion.span>
+                    
+                    <h1 className="text-3xl font-editorial italic text-stone-900 leading-[1.1]">
+                        {timeGreeting}, <span className="underline decoration-rose-300 decoration-2 underline-offset-4">{user.name.split(' ')[0]}</span>
+                    </h1>
+                </div>
 
-              {/* Top Right Actions */}
-              <div className="flex items-center gap-2">
-                  {/* Language Pill */}
-                  <div className="relative z-50">
-                      <button 
-                          onClick={(e) => { e.stopPropagation(); setShowLangMenu(!showLangMenu); }}
-                          className="flex items-center gap-1.5 bg-white/60 backdrop-blur-md border border-white/40 shadow-sm pl-2 pr-3 py-1.5 rounded-full hover:bg-white transition-all active:scale-95"
-                      >
-                          <span className="text-lg leading-none">{currentLang?.flag}</span>
-                          <ChevronDown size={12} className={`text-stone-400 transition-transform duration-300 ${showLangMenu ? 'rotate-180' : ''}`} />
-                      </button>
+                {/* Right Actions */}
+                <div className="flex items-center gap-2">
+                    {/* Language Pill */}
+                    <div className="relative z-50">
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); setShowLangMenu(!showLangMenu); }}
+                            className="flex items-center gap-1.5 bg-white/60 backdrop-blur-md border border-white/40 shadow-sm pl-2 pr-3 py-1.5 rounded-full hover:bg-white transition-all active:scale-95"
+                        >
+                            <span className="text-lg leading-none">{currentLang?.flag}</span>
+                            <ChevronDown size={12} className={`text-stone-400 transition-transform duration-300 ${showLangMenu ? 'rotate-180' : ''}`} />
+                        </button>
 
-                      <AnimatePresence>
-                          {showLangMenu && (
-                              <motion.div 
-                                  initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                                  exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                                  className="absolute top-full right-0 mt-2 w-40 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-white/50 overflow-hidden py-1 z-50"
-                              >
-                                  {languages.map((lang) => (
-                                      <button
-                                          key={lang.code}
-                                          onClick={() => setLanguage(lang.code as Language)}
-                                          className={`w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-rose-50 transition-colors ${language === lang.code ? 'bg-rose-50/50 text-rose-600' : 'text-stone-600'}`}
-                                      >
-                                          <span className="text-lg">{lang.flag}</span>
-                                          <span className="text-xs font-bold uppercase tracking-wider">{lang.label}</span>
-                                      </button>
-                                  ))}
-                              </motion.div>
-                          )}
-                      </AnimatePresence>
-                  </div>
+                        <AnimatePresence>
+                            {showLangMenu && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                                    className="absolute top-full right-0 mt-2 w-40 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-white/50 overflow-hidden py-1 z-50"
+                                >
+                                    {languages.map((lang) => (
+                                        <button
+                                            key={lang.code}
+                                            onClick={() => setLanguage(lang.code as Language)}
+                                            className={`w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-rose-50 transition-colors ${language === lang.code ? 'bg-rose-50/50 text-rose-600' : 'text-stone-600'}`}
+                                        >
+                                            <span className="text-lg">{lang.flag}</span>
+                                            <span className="text-xs font-bold uppercase tracking-wider">{lang.label}</span>
+                                        </button>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
 
-                  {/* Avatar */}
-                  <div className="w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-rose-300 to-orange-200">
-                      <img src={user.avatarUrl} alt="User" className="w-full h-full rounded-full object-cover border-2 border-white" />
-                  </div>
-              </div>
-          </div>
+                    {/* Avatar */}
+                    <div className="w-10 h-10 rounded-full p-[2px] bg-gradient-to-tr from-rose-300 to-orange-200 shadow-md">
+                        <img src={user.avatarUrl} alt="User" className="w-full h-full rounded-full object-cover border-2 border-white" />
+                    </div>
+                </div>
+            </div>
 
-          {/* --- TABS: Segmented Control Style --- */}
-          <div className="flex p-1.5 bg-stone-100/80 backdrop-blur-sm rounded-2xl w-full shadow-inner relative">
-               {/* Animated Background for Active Tab could go here, but strictly following design: */}
-               <TabButton 
-                  isActive={activeTab === 'generate'} 
-                  onClick={() => setActiveTab('generate')} 
-                  icon={<Sparkles size={14} />} 
-                  label={t('fridge_tab_gen')} 
-               />
-               <TabButton 
-                  isActive={activeTab === 'explore'} 
-                  onClick={() => setActiveTab('explore')} 
-                  icon={<Compass size={14} />} 
-                  label={t('fridge_tab_explore')} 
-               />
-               <TabButton 
-                  isActive={activeTab === 'saved'} 
-                  onClick={() => setActiveTab('saved')} 
-                  icon={<Heart size={14} />} 
-                  label={t('fridge_tab_saved')} 
-               />
-          </div>
-      </div>
+            {/* --- SLIDING CAPSULE TABS --- */}
+            <div className="flex p-1 bg-stone-200/50 backdrop-blur-md rounded-full w-full relative">
+                {[
+                    { id: 'generate', icon: <Sparkles size={14} />, label: t('fridge_tab_gen') },
+                    { id: 'explore', icon: <Compass size={14} />, label: t('fridge_tab_explore') },
+                    { id: 'saved', icon: <Heart size={14} />, label: t('fridge_tab_saved') }
+                ].map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    return (
+                        <button
+                            key={tab.id}
+                            onClick={() => {
+                                if(navigator.vibrate) navigator.vibrate(10);
+                                setActiveTab(tab.id as any);
+                            }}
+                            className={`flex-1 relative flex items-center justify-center gap-2 py-2.5 rounded-full text-xs font-bold uppercase tracking-wide transition-colors duration-300 z-10 ${isActive ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
+                        >
+                            {isActive && (
+                                <motion.div
+                                    layoutId="activeTab"
+                                    className="absolute inset-0 bg-white rounded-full shadow-[0_2px_10px_rgba(0,0,0,0.08)] border border-white/50"
+                                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                                />
+                            )}
+                            <span className="relative z-10 flex items-center gap-2">
+                                {tab.icon} {tab.label}
+                            </span>
+                        </button>
+                    )
+                })}
+            </div>
 
-      {/* --- MAIN CONTENT AREA --- */}
-      <div className="mt-2 min-h-[50vh]">
+        </div>
+      </header>
+
+      {/* --- CONTENT --- */}
+      <div className="px-4 md:px-6 mt-6 max-w-lg mx-auto">
           <AnimatePresence mode="wait">
               <motion.div
                   key={activeTab}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
+                  initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -10, filter: 'blur(5px)' }}
+                  transition={{ duration: 0.3 }}
               >
                   {activeTab === 'explore' ? (
                      <ExploreTab 
@@ -244,19 +255,5 @@ const SmartFridge: React.FC<SmartFridgeProps> = ({ initialIngredients, clearInit
     </div>
   );
 };
-
-const TabButton = ({ isActive, onClick, icon, label }: { isActive: boolean, onClick: () => void, icon: React.ReactNode, label: string }) => (
-    <button
-        onClick={onClick}
-        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold uppercase tracking-wide transition-all duration-300 ${
-            isActive 
-            ? 'bg-white text-rose-500 shadow-[0_4px_12px_rgba(0,0,0,0.05)] scale-[1.02]' 
-            : 'text-stone-400 hover:text-stone-600'
-        }`}
-    >
-        {icon}
-        <span className="hidden sm:inline">{label}</span>
-    </button>
-);
 
 export default SmartFridge;
