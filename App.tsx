@@ -21,16 +21,19 @@ const AppContent = () => {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
+  // Show Loading Spinner until User is loaded
   if (!mounted || isLoading) {
     return (
         <div className="min-h-screen bg-[#F9F8F6] flex items-center justify-center">
             <div className="flex flex-col items-center gap-4">
                 <div className="w-12 h-12 rounded-full border-4 border-rose-200 border-t-rose-500 animate-spin"></div>
+                <p className="text-stone-400 font-brutal uppercase tracking-widest text-xs animate-pulse">Loading Experience...</p>
             </div>
         </div>
     );
   }
 
+  // Show Onboarding if new user
   if (!user.hasCompletedOnboarding) {
     return <Onboarding onComplete={() => updateUser({ hasCompletedOnboarding: true })} />;
   }
@@ -59,7 +62,7 @@ const AppContent = () => {
   return (
     <div className="min-h-screen bg-[#F9F8F6] text-stone-900 font-sans pb-32 overflow-x-hidden relative selection:bg-rose-200">
       
-      {/* Dynamic Background Gradients that shift slightly based on view */}
+      {/* Dynamic Background Gradients */}
       <div className="fixed inset-0 pointer-events-none z-0 opacity-40 transition-opacity duration-1000">
           <div className={`absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full blur-[100px] transition-colors duration-1000 ${currentView === ViewState.SMART_FRIDGE ? 'bg-rose-100' : currentView === ViewState.TRACKER ? 'bg-emerald-100' : 'bg-blue-100'}`} />
           <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-orange-50 rounded-full blur-[80px]" />
@@ -73,7 +76,7 @@ const AppContent = () => {
       {/* Floating Chat Widget */}
       <AIChefChat />
 
-      {/* 2025 TREND: Floating Island Navigation */}
+      {/* Navigation Island */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-[340px] px-2">
         <nav className="bg-white/80 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] py-3 px-2 flex justify-between items-center shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] ring-1 ring-white/50">
           
@@ -124,13 +127,9 @@ const NavButton = ({ active, onClick, icon, label }: { active: boolean, onClick:
     `}>
       {icon}
     </div>
-    
-    {/* Label morphs in */}
     <span className={`absolute bottom-1 text-[9px] font-brutal font-bold uppercase tracking-widest text-stone-900 transition-all duration-300 ${active ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
       {label}
     </span>
-    
-    {/* Active Glow */}
     {active && <div className="absolute top-2 w-4 h-4 bg-stone-900 blur-md opacity-20 -z-10"></div>}
   </button>
 );
