@@ -1,0 +1,7 @@
+{
+  "name": "NourishHer AI",
+  "description": "An AI-powered nutritional assistant and meal planner designed for women, featuring smart fridge cleanup and a personal AI chef.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
