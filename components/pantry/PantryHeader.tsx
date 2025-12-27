@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Leaf, AlertTriangle, Plus, Scan, ArrowUpRight, Package } from 'lucide-react';
+import { Leaf, AlertTriangle, Plus, Scan, Package, CheckCircle2, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 
@@ -17,126 +17,168 @@ interface PantryHeaderProps {
 const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick }) => {
   const { t } = useLanguage();
 
-  // Calculate circle logic for Eco Score
-  const radius = 36;
+  // Circle config
+  const radius = 40;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (stats.ecoScore / 100) * circumference;
   
-  // Determine status color and text based on score
-  const isGood = stats.ecoScore > 70;
-  const isCritical = stats.ecoScore < 40;
+  // Status logic
+  const isExcellent = stats.ecoScore >= 80;
+  const isCritical = stats.ecoScore < 50;
   
-  const statusColor = isGood ? 'text-emerald-500' : isCritical ? 'text-rose-500' : 'text-amber-500';
-  const statusBg = isGood ? 'bg-emerald-500' : isCritical ? 'bg-rose-500' : 'bg-amber-500';
-  const statusText = isGood ? 'Eco Warrior' : isCritical ? 'Waste Alert' : 'Balanced';
+  // Dynamic Colors
+  const scoreGradientId = isExcellent ? "gradExcel" : isCritical ? "gradCrit" : "gradNorm";
 
   return (
-    <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-700 font-sans">
+    <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-700 font-sans">
       
-      {/* 1. TOP TITLE ROW */}
-      <div className="flex justify-between items-start mb-5 px-1">
+      {/* 1. TITLE & DATE */}
+      <div className="flex justify-between items-end mb-6 px-1">
         <div>
-          <motion.div 
-             initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-             className="flex items-center gap-2 mb-1"
-          >
-             <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-             <span className="text-[10px] font-brutal font-black text-stone-400 uppercase tracking-[0.2em]">
+          <div className="flex items-center gap-2 mb-2">
+             <span className="relative flex h-2 w-2">
+               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+             </span>
+             <span className="text-[10px] font-brutal font-bold text-stone-400 uppercase tracking-[0.2em]">
                 {t('pantry_title')}
              </span>
-          </motion.div>
-          <h1 className="text-4xl font-editorial italic text-stone-900 leading-[0.9]">
-            {t('pantry_subtitle')}
+          </div>
+          <h1 className="text-5xl font-editorial italic text-stone-900 leading-[0.9]">
+            {t('pantry_subtitle').split(' ')[0]}<br/>
+            <span className="text-stone-300">{t('pantry_subtitle').split(' ').slice(1).join(' ')}</span>
           </h1>
         </div>
       </div>
 
-      {/* 2. BENTO GRID DASHBOARD */}
-      <div className="grid grid-cols-2 gap-3 h-[240px]">
+      {/* 2. DASHBOARD GRID (Asymmetric) */}
+      <div className="grid grid-cols-2 gap-3 h-[260px]">
         
-        {/* BLOCK A: ECO SCORE (Large Square) */}
-        <div className="col-span-1 bg-white rounded-[2rem] p-4 relative overflow-hidden shadow-sm border border-stone-100 flex flex-col items-center justify-center">
-             {/* Background Decor */}
-             <div className={`absolute top-0 left-0 w-full h-1 ${statusBg} opacity-20`} />
+        {/* A. ECO SCORE (Dark Premium Card) */}
+        <div className="col-span-1 bg-stone-900 rounded-[2.5rem] p-5 relative overflow-hidden flex flex-col items-center justify-between shadow-2xl shadow-stone-200">
+             {/* Gradient Orb Background */}
+             <div className="absolute top-[-50%] right-[-50%] w-[150%] h-[150%] bg-gradient-to-br from-emerald-500/20 to-transparent rounded-full blur-3xl pointer-events-none" />
              
-             <div className="relative w-28 h-28 flex items-center justify-center mb-2">
-                 {/* SVG Circle Graph */}
-                 <svg className="w-full h-full transform -rotate-90">
-                     <circle cx="56" cy="56" r={radius} stroke="#f5f5f4" strokeWidth="8" fill="none" />
+             <div className="w-full flex justify-between items-start z-10">
+                 <span className="text-white/60 text-[10px] font-brutal font-bold uppercase tracking-widest">Eco Score</span>
+                 <Leaf size={16} className={isExcellent ? "text-emerald-400" : "text-stone-400"} />
+             </div>
+
+             <div className="relative w-32 h-32 flex items-center justify-center z-10 my-2">
+                 {/* Progress Circle */}
+                 <svg className="w-full h-full transform -rotate-90 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                     <defs>
+                        <linearGradient id="gradExcel" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#34d399" />
+                            <stop offset="100%" stopColor="#10b981" />
+                        </linearGradient>
+                        <linearGradient id="gradNorm" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#fbbf24" />
+                            <stop offset="100%" stopColor="#f59e0b" />
+                        </linearGradient>
+                        <linearGradient id="gradCrit" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#f43f5e" />
+                            <stop offset="100%" stopColor="#e11d48" />
+                        </linearGradient>
+                     </defs>
+                     <circle cx="64" cy="64" r={radius} stroke="#333" strokeWidth="6" fill="none" />
                      <motion.circle 
-                        cx="56" cy="56" r={radius} 
-                        stroke="currentColor" 
-                        strokeWidth="8" 
+                        cx="64" cy="64" r={radius} 
+                        stroke={`url(#${scoreGradientId})`}
+                        strokeWidth="6" 
                         fill="none" 
-                        className={statusColor}
                         strokeDasharray={circumference}
                         initial={{ strokeDashoffset: circumference }}
                         animate={{ strokeDashoffset }}
-                        transition={{ duration: 1.5, ease: "easeOut" }}
+                        transition={{ duration: 1.5, ease: "circOut" }}
                         strokeLinecap="round" 
                      />
                  </svg>
                  <div className="absolute flex flex-col items-center">
-                     <Leaf size={18} className={`${statusColor} mb-1`} />
-                     <span className="text-3xl font-editorial italic font-bold text-stone-900">{stats.ecoScore}</span>
+                     <span className="text-4xl font-editorial italic font-bold text-white">{stats.ecoScore}</span>
                  </div>
              </div>
-             <p className={`text-xs font-brutal font-bold uppercase tracking-widest ${statusColor}`}>{statusText}</p>
+             
+             <div className="z-10 bg-white/10 backdrop-blur-md rounded-full px-3 py-1 border border-white/10">
+                 <span className="text-[9px] font-brutal font-bold text-white uppercase tracking-wider">
+                    {isExcellent ? 'Excellent' : isCritical ? 'Action Needed' : 'Good'}
+                 </span>
+             </div>
         </div>
 
-        {/* BLOCK B: RIGHT COLUMN (Stacked) */}
+        {/* B. RIGHT COLUMN */}
         <div className="col-span-1 flex flex-col gap-3">
             
-            {/* B1. EXPIRING ALERT */}
-            <div className={`flex-1 rounded-[2rem] p-4 relative overflow-hidden flex flex-col justify-between transition-colors ${stats.expiring > 0 ? 'bg-orange-50 border border-orange-100' : 'bg-[#F9F8F6] border border-stone-100'}`}>
+            {/* B1. EXPIRING (State-Aware) */}
+            <div className={`flex-1 rounded-[2.5rem] p-5 relative overflow-hidden flex flex-col justify-between transition-all duration-500 border ${stats.expiring > 0 ? 'bg-orange-50 border-orange-200' : 'bg-white border-stone-100 shadow-sm'}`}>
                 <div className="flex justify-between items-start">
-                    <span className="text-[9px] font-brutal font-bold uppercase tracking-wider text-stone-500">{t('p_item_expiring')}</span>
-                    {stats.expiring > 0 && <AlertTriangle size={16} className="text-orange-500 animate-bounce" />}
+                    <span className={`text-[9px] font-brutal font-bold uppercase tracking-wider ${stats.expiring > 0 ? 'text-orange-600' : 'text-stone-400'}`}>
+                        {t('p_item_expiring')}
+                    </span>
+                    {stats.expiring > 0 ? (
+                        <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center animate-pulse">
+                            <AlertTriangle size={12} className="text-orange-600" />
+                        </div>
+                    ) : (
+                        <CheckCircle2 size={16} className="text-emerald-500" />
+                    )}
                 </div>
-                <div className="flex items-end gap-2">
-                    <span className={`text-4xl font-editorial italic leading-none ${stats.expiring > 0 ? 'text-orange-600' : 'text-stone-300'}`}>
+                
+                <div className="mt-auto">
+                    <span className={`text-4xl font-editorial italic leading-none block mb-1 ${stats.expiring > 0 ? 'text-orange-600' : 'text-stone-900'}`}>
                         {stats.expiring}
                     </span>
-                    <span className="text-xs font-bold text-stone-400 mb-1">{t('explore_items').toLowerCase()}</span>
+                    <span className="text-[10px] font-bold text-stone-400">
+                        {stats.expiring > 0 ? 'Items need attention' : 'All fresh & good'}
+                    </span>
                 </div>
             </div>
 
             {/* B2. TOTAL STOCK */}
-            <div className="flex-1 bg-stone-900 rounded-[2rem] p-4 relative overflow-hidden flex items-center justify-between text-white group">
-                <div>
-                    <span className="block text-[9px] font-brutal font-bold uppercase tracking-wider text-stone-400 mb-1">{t('pantry_section_all')}</span>
-                    <span className="text-3xl font-editorial italic leading-none">{stats.total}</span>
+            <div className="flex-1 bg-white border border-stone-100 rounded-[2.5rem] p-5 shadow-sm flex flex-col justify-center relative overflow-hidden group">
+                <div className="absolute right-[-10px] top-[-10px] opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
+                    <Package size={80} />
                 </div>
-                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                    <Package size={20} className="text-stone-200" />
+                <span className="text-[9px] font-brutal font-bold uppercase tracking-wider text-stone-400 mb-1">{t('pantry_section_all')}</span>
+                <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-editorial italic text-stone-900">{stats.total}</span>
+                    <span className="text-xs font-bold text-stone-300">items</span>
                 </div>
             </div>
 
         </div>
 
-        {/* BLOCK C: BIG ACTION BUTTON (Wide Bottom) */}
+      </div>
+
+      {/* 3. COMMAND BAR (Floating Action) */}
+      <div className="mt-4">
         <button 
             onClick={() => {
                 if(navigator.vibrate) navigator.vibrate(10);
                 onAddClick();
             }}
-            className="col-span-2 bg-gradient-to-r from-stone-100 to-white rounded-[2rem] p-1.5 shadow-sm border border-stone-200 active:scale-95 transition-transform group"
+            className="w-full group relative overflow-hidden bg-white rounded-[2rem] p-2 shadow-[0_10px_30px_rgba(0,0,0,0.08)] border border-stone-100 active:scale-[0.98] transition-all duration-300"
         >
-            <div className="w-full h-full bg-white rounded-[1.7rem] border border-stone-100 flex items-center justify-between px-6 py-4">
-                 <div className="flex items-center gap-4">
-                     <div className="w-10 h-10 bg-stone-900 rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                         <Plus size={20} />
-                     </div>
-                     <div className="text-left">
-                         <span className="block font-editorial italic text-lg text-stone-900 leading-none">{t('btn_add')}</span>
-                         <span className="text-[10px] font-brutal font-bold uppercase tracking-wider text-stone-400">Scan or Manual</span>
-                     </div>
+            <div className="flex items-center justify-between pl-6 pr-2 py-3">
+                 <div className="flex flex-col items-start">
+                     <span className="text-lg font-editorial italic font-bold text-stone-900 leading-none mb-1 group-hover:translate-x-1 transition-transform">{t('btn_add')}</span>
+                     <span className="text-[9px] font-brutal font-bold uppercase tracking-wider text-stone-400">Scan code or manual entry</span>
                  </div>
-                 <Scan size={20} className="text-stone-300 group-hover:text-rose-500 transition-colors" />
+                 
+                 <div className="h-12 w-16 bg-stone-900 rounded-[1.5rem] flex items-center justify-center text-white relative overflow-hidden">
+                     <div className="absolute inset-0 bg-gradient-to-r from-stone-800 to-stone-900" />
+                     <Scan size={20} className="relative z-10 group-hover:scale-110 transition-transform" />
+                     {/* Scanning Line Animation */}
+                     <motion.div 
+                        animate={{ top: ['0%', '100%', '0%'] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        className="absolute left-0 right-0 h-[1px] bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.8)] z-10 opacity-50"
+                     />
+                 </div>
             </div>
         </button>
-
       </div>
+
     </div>
   );
 };
