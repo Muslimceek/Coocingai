@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Compass, Plus, ArrowLeft, X, Zap, Sparkles, MoveRight } from 'lucide-react';
 import { RecipeCollection, GeneratedRecipe } from '../../types';
@@ -71,6 +72,14 @@ const getMockCollections = (t: (key: string) => string): RecipeCollection[] => [
     icon: '🎈',
     recipes: []
   },
+  {
+    id: 'world',
+    title: t('col_world'),
+    description: t('col_world_desc'),
+    gradient: 'from-indigo-400 to-purple-400',
+    icon: '🌎',
+    recipes: []
+  },
 ];
 
 interface ExploreTabProps {
@@ -84,6 +93,7 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
   const [viewedRecipe, setViewedRecipe] = useState<GeneratedRecipe | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   
+  // Recalculate collections when translation changes
   const collections = getMockCollections(t);
   const trendingRecipes = collections.flatMap(c => c.recipes).slice(0, 3);
 
@@ -159,7 +169,7 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
       <section className="mb-16">
         <div className="flex items-end justify-between mb-8 px-2">
            <h2 className="font-editorial italic text-5xl text-stone-900 leading-tight">
-             What's Cooking<br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-orange-500 not-italic font-brutal font-bold tracking-tighter">THIS WEEK</span>
+             {t('explore_trending_title')}<br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-orange-500 not-italic font-brutal font-bold tracking-tighter">{t('explore_trending_subtitle')}</span>
            </h2>
         </div>
 
@@ -177,7 +187,7 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
                     {/* Floating Info Tag */}
                     <div className="absolute top-6 right-6 w-14 h-14 bg-white/20 backdrop-blur-xl rounded-full border border-white/30 flex flex-col items-center justify-center text-white shadow-xl animate-bounce-slow">
                        <span className="font-brutal font-bold text-lg">{r.prepTimeMinutes}</span>
-                       <span className="text-[8px] uppercase font-bold tracking-wider">MIN</span>
+                       <span className="text-[8px] uppercase font-bold tracking-wider">{t('explore_min')}</span>
                     </div>
 
                     <div className="absolute bottom-8 left-8 right-8 text-white">
@@ -186,7 +196,7 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
                       </div>
                       <h3 className="font-editorial italic text-4xl mb-3 leading-none group-hover:text-rose-200 transition-colors">{r.title}</h3>
                       <div className="flex items-center gap-2 text-xs font-brutal font-bold uppercase tracking-widest opacity-80">
-                         View Recipe <MoveRight size={14} />
+                         {t('explore_view_recipe')} <MoveRight size={14} />
                       </div>
                     </div>
                   </div>
@@ -199,7 +209,7 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
       <section>
         <div className="flex items-center justify-between mb-8 px-2">
             <h3 className="font-brutal font-bold text-xl text-stone-900 uppercase tracking-tight flex items-center gap-2">
-              <Compass className="text-stone-900" size={20} strokeWidth={2.5} /> Curated Lists
+              <Compass className="text-stone-900" size={20} strokeWidth={2.5} /> {t('explore_curated')}
             </h3>
             
             <button 
@@ -238,7 +248,7 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
                         {col.title}
                       </h4>
                       <div className="flex items-center gap-2">
-                         <span className="bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-brutal font-bold uppercase text-white tracking-widest border border-white/20">{col.recipes.length} ITEMS</span>
+                         <span className="bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-brutal font-bold uppercase text-white tracking-widest border border-white/20">{col.recipes.length} {t('explore_items')}</span>
                       </div>
                     </div>
                   </div>
@@ -262,8 +272,8 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
                 <div className="w-20 h-20 bg-gradient-to-tr from-rose-400 to-orange-400 rounded-[2rem] flex items-center justify-center shadow-xl shadow-rose-200 mb-6 mx-auto rotate-6">
                    <Sparkles className="text-white" size={40} />
                 </div>
-                <h3 className="text-4xl font-editorial italic text-stone-900 mb-2">New Collection</h3>
-                <p className="font-brutal text-stone-500 text-sm uppercase tracking-widest">Curate your flavors</p>
+                <h3 className="text-4xl font-editorial italic text-stone-900 mb-2">{t('explore_new_collection')}</h3>
+                <p className="font-brutal text-stone-500 text-sm uppercase tracking-widest">{t('explore_curate_flavors')}</p>
               </div>
 
               <div className="space-y-6">
@@ -271,7 +281,7 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
                     <input type="text" placeholder="e.g. Sunday Brunch" className="w-full mt-2 p-6 bg-stone-50 border-none rounded-[2rem] focus:ring-2 focus:ring-stone-900 transition-all font-editorial italic text-2xl text-center placeholder:text-stone-300 outline-none" autoFocus />
                  </div>
                  <button onClick={() => setShowCreateModal(false)} className="w-full bg-stone-900 text-white py-6 rounded-[2rem] font-brutal font-bold text-lg hover:scale-[1.02] transition-all shadow-xl active:scale-[0.98]">
-                    CREATE
+                    {t('explore_create_btn')}
                  </button>
               </div>
            </div>

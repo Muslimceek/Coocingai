@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Plus, X, ShoppingBasket, ChevronRight, Loader2, Sparkles, Wand2, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -93,8 +94,8 @@ const GeneratorTab: React.FC<GeneratorTabProps> = ({
               <Wand2 className="text-white" size={28} />
             </div>
             <div>
-              <h2 className="text-3xl font-editorial italic font-bold text-stone-900">AI Chef</h2>
-              <p className="text-stone-400 text-xs font-brutal font-bold uppercase tracking-widest">Create a masterpiece</p>
+              <h2 className="text-3xl font-editorial italic font-bold text-stone-900">{t('gen_ai_chef')}</h2>
+              <p className="text-stone-400 text-xs font-brutal font-bold uppercase tracking-widest">{t('gen_create_masterpiece')}</p>
             </div>
           </div>
 
@@ -112,7 +113,7 @@ const GeneratorTab: React.FC<GeneratorTabProps> = ({
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
                   className="w-full pl-6 pr-16 py-6 bg-stone-100/50 border-none rounded-[2rem] focus:ring-2 focus:ring-rose-400 focus:bg-white transition-all text-xl font-editorial italic text-stone-700 placeholder:text-stone-300 outline-none shadow-inner"
-                  placeholder="e.g. Chicken, Garlic, Cream..."
+                  placeholder={t('fridge_placeholder')}
                 />
                 <button
                   onClick={handleAdd}
@@ -150,7 +151,7 @@ const GeneratorTab: React.FC<GeneratorTabProps> = ({
                             className="flex items-center gap-2 text-stone-300 text-sm px-2 italic font-editorial"
                         >
                             <ShoppingBasket size={16} />
-                            Your basket is empty
+                            {t('fridge_empty_title')}
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -209,12 +210,12 @@ const GeneratorTab: React.FC<GeneratorTabProps> = ({
             {loading ? (
               <div className="flex items-center justify-center gap-3">
                 <Loader2 className="animate-spin text-rose-400" size={24} />
-                <span className="animate-pulse">Thinking...</span>
+                <span className="animate-pulse">{t('gen_thinking')}</span>
               </div>
             ) : (
               <div className="relative z-10 flex items-center justify-center gap-3">
                 <Sparkles size={20} className="text-amber-400 fill-amber-400 animate-pulse" />
-                <span>Create Recipe</span>
+                <span>{t('gen_create_btn')}</span>
                 <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </div>
             )}

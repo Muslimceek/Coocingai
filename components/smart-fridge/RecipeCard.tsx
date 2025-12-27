@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   PlayCircle, Heart, ChefHat, Clock, Flame, Utensils, Sparkles, 
@@ -168,17 +169,17 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             <div className="bg-white/70 backdrop-blur-xl border border-white/60 rounded-[2rem] p-3 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] flex justify-between items-center">
                 
                 <div className="flex-1 py-3 text-center border-r border-stone-200/50">
-                    <span className="block text-[9px] font-brutal font-bold text-stone-400 uppercase tracking-widest mb-1">Time</span>
+                    <span className="block text-[9px] font-brutal font-bold text-stone-400 uppercase tracking-widest mb-1">{t('recipe_time')}</span>
                     <span className="text-xl font-editorial italic text-stone-900">{recipe.prepTimeMinutes}<span className="text-xs not-italic ml-0.5 opacity-50 font-sans">m</span></span>
                 </div>
 
                 <div className="flex-1 py-3 text-center border-r border-stone-200/50">
-                    <span className="block text-[9px] font-brutal font-bold text-stone-400 uppercase tracking-widest mb-1">Cals</span>
+                    <span className="block text-[9px] font-brutal font-bold text-stone-400 uppercase tracking-widest mb-1">{t('recipe_cals')}</span>
                     <span className="text-xl font-editorial italic text-stone-900">{recipe.calories}</span>
                 </div>
 
                 <div className="flex-1 py-3 text-center">
-                    <span className="block text-[9px] font-brutal font-bold text-stone-400 uppercase tracking-widest mb-1">Serves</span>
+                    <span className="block text-[9px] font-brutal font-bold text-stone-400 uppercase tracking-widest mb-1">{t('recipe_serves')}</span>
                     <span className="text-xl font-editorial italic text-stone-900">{recipe.servings || 2}</span>
                 </div>
 
@@ -202,7 +203,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                     <Sparkles size={120} />
                 </div>
                 <h4 className="font-brutal font-bold text-xs uppercase tracking-[0.2em] text-rose-500 mb-6 flex items-center gap-2 relative z-10">
-                    <Sparkles size={14} /> Chef's Secret
+                    <Sparkles size={14} /> {t('recipe_chef_secret')}
                 </h4>
                 <ul className="space-y-4 relative z-10">
                     {recipe.tips.map((tip, idx) => (
@@ -219,7 +220,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
           <section className={cookingMode ? 'opacity-40 hover:opacity-100 transition-opacity' : ''}>
             <div className="flex items-center justify-between mb-6 sticky top-0 bg-[#F9F8F6]/90 backdrop-blur-md py-4 z-10">
                 <h2 className="text-xs font-brutal font-black uppercase tracking-[0.2em] flex items-center gap-3 text-stone-400">
-                    The Elements
+                    {t('recipe_elements')}
                     <span className="w-8 h-px bg-stone-300"></span>
                 </h2>
                 <span className="bg-stone-900 text-white text-[9px] font-bold px-2 py-1 rounded-lg">{recipe.ingredients.length}</span>
@@ -249,7 +250,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
           {/* Instructions - "The Process" */}
           <section id="instructions-start">
              <h2 className="text-xs font-brutal font-black uppercase tracking-[0.2em] flex items-center gap-3 text-stone-400 mb-8">
-                The Process
+                {t('recipe_process')}
                 <span className="w-8 h-px bg-stone-300"></span>
              </h2>
 
@@ -310,7 +311,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                         <span className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center group-hover:rotate-90 transition-transform duration-500">
                             <PlayCircle size={16} className="text-rose-400 fill-current" />
                         </span>
-                        Start Cooking
+                        {t('recipe_start_cooking')}
                      </button>
                      <button 
                         onClick={() => setShowStartButton(false)}
@@ -333,7 +334,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                      </button>
                      
                      <div className="px-4 flex flex-col items-center">
-                         <span className="text-[10px] font-brutal font-bold uppercase tracking-widest text-stone-400">Step</span>
+                         <span className="text-[10px] font-brutal font-bold uppercase tracking-widest text-stone-400">{t('recipe_step')}</span>
                          <span className="text-xl font-editorial italic leading-none">{currentStep + 1}<span className="text-sm opacity-50 not-italic">/{recipe.instructions.length}</span></span>
                      </div>
 

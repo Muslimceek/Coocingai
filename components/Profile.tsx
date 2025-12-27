@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { 
   Settings, Crown, ChevronRight, Globe, Camera, 
@@ -39,8 +40,7 @@ const Profile: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-end mb-8 px-2">
         <h1 className="text-5xl font-editorial italic font-bold text-stone-900 leading-[0.9]">
-          My<br/>
-          <span className="not-italic font-brutal tracking-tight text-4xl text-stone-300">Space</span>
+          {t('profile_myspace')}
         </h1>
         <button className="p-3 bg-white rounded-2xl shadow-sm border border-stone-100 text-stone-600 hover:rotate-90 transition-transform duration-500">
           <Settings size={22} />
@@ -85,12 +85,12 @@ const Profile: React.FC = () => {
                <div className="flex-1 bg-stone-50 rounded-2xl p-3 flex flex-col items-center justify-center">
                   <Activity size={16} className="text-rose-400 mb-1" />
                   <span className="text-xl font-bold text-stone-900">12</span>
-                  <span className="text-[9px] font-brutal uppercase tracking-wider text-stone-400">Day Streak</span>
+                  <span className="text-[9px] font-brutal uppercase tracking-wider text-stone-400">{t('profile_day_streak')}</span>
                </div>
                <div className="flex-1 bg-stone-50 rounded-2xl p-3 flex flex-col items-center justify-center">
                   <Scale size={16} className="text-indigo-400 mb-1" />
                   <span className="text-xl font-bold text-stone-900">{user.dailyStats?.weight || 64}</span>
-                  <span className="text-[9px] font-brutal uppercase tracking-wider text-stone-400">Kg Curr</span>
+                  <span className="text-[9px] font-brutal uppercase tracking-wider text-stone-400">{t('profile_kg_curr')}</span>
                </div>
             </div>
          </div>
@@ -102,11 +102,11 @@ const Profile: React.FC = () => {
                    <Crown size={24} className="text-amber-300" fill="currentColor" />
                    <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
                 </div>
-                <h3 className="mt-4 text-xl font-editorial italic">{user.subscription?.plan === 'premium' ? 'Premium' : 'Free Plan'}</h3>
-                <p className="text-stone-400 text-xs mt-1">Next: {user.subscription?.nextBillingDate}</p>
+                <h3 className="mt-4 text-xl font-editorial italic">{user.subscription?.plan === 'premium' ? t('profile_premium') : t('profile_free_plan')}</h3>
+                <p className="text-stone-400 text-xs mt-1">{t('profile_next_bill')} {user.subscription?.nextBillingDate}</p>
              </div>
              <button className="mt-4 w-full py-2 bg-white/10 backdrop-blur-md rounded-xl text-xs font-bold hover:bg-white hover:text-stone-900 transition-colors">
-                Manage
+                {t('profile_manage_sub')}
              </button>
              {/* Decor */}
              <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-gradient-to-br from-amber-400 to-rose-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
@@ -114,7 +114,13 @@ const Profile: React.FC = () => {
 
          {/* 3. SETTINGS GRID ITEMS */}
          <button 
-           onClick={() => setLanguage(language === 'en' ? 'ru' : 'en')}
+           onClick={() => {
+              // Cycle through languages or open menu (simple cycle here for demo, though main menu is better)
+              const nextLang = {
+                  en: 'ru', ru: 'uz', uz: 'kk', kk: 'ky', ky: 'tg', tg: 'en'
+              }[language] as any;
+              setLanguage(nextLang);
+           }}
            className="col-span-1 bg-white rounded-[2rem] p-4 shadow-sm border border-stone-100 hover:scale-[1.02] transition-transform flex flex-col items-center justify-center gap-2"
          >
             <Globe size={24} className="text-stone-800" strokeWidth={1.5} />
@@ -123,14 +129,14 @@ const Profile: React.FC = () => {
 
          <button className="col-span-1 bg-emerald-50 rounded-[2rem] p-4 shadow-sm border border-emerald-100 hover:scale-[1.02] transition-transform flex flex-col items-center justify-center gap-2 text-emerald-700">
             <Shield size={24} strokeWidth={1.5} />
-            <span className="text-xs font-brutal font-bold uppercase">Privacy</span>
+            <span className="text-xs font-brutal font-bold uppercase">{t('profile_privacy')}</span>
          </button>
 
          {/* 4. GOALS (Spans full width or 2 cols) */}
          <div className="col-span-2 bg-white rounded-[2.5rem] p-6 shadow-sm border border-stone-100">
              <div className="flex items-center gap-2 mb-4">
                  <Sparkles size={16} className="text-amber-400" />
-                 <h3 className="text-sm font-brutal font-bold uppercase tracking-widest text-stone-900">Focus Areas</h3>
+                 <h3 className="text-sm font-brutal font-bold uppercase tracking-widest text-stone-900">{t('profile_focus_areas')}</h3>
              </div>
              <div className="flex flex-wrap gap-2">
                 {user.goals?.map(goal => (
@@ -147,7 +153,7 @@ const Profile: React.FC = () => {
          {/* 5. MENU ITEMS */}
          <div className="col-span-2 flex flex-col gap-2">
              <MenuItem icon={<MessageCircle size={18} />} label={t('profile_help')} />
-             <MenuItem icon={<User size={18} />} label="Account Data" />
+             <MenuItem icon={<User size={18} />} label={t('profile_account_data')} />
          </div>
 
       </div>

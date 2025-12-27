@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Droplets, Flame, Plus, X, Smile, Frown, Meh, Zap, Moon, Sun, Coffee, Utensils } from 'lucide-react';
@@ -42,9 +43,9 @@ const Tracker: React.FC = () => {
       
       {/* Editorial Header */}
       <div className="mb-10 px-2">
-        <h2 className="text-xs font-brutal font-bold uppercase tracking-[0.2em] text-stone-400 mb-2">Daily Wellness</h2>
+        <h2 className="text-xs font-brutal font-bold uppercase tracking-[0.2em] text-stone-400 mb-2">{t('tracker_daily_wellness')}</h2>
         <h1 className="text-5xl font-editorial italic text-stone-900 leading-none">
-          Body & <span className="text-rose-500">Soul</span>
+          {t('tracker_body_soul')}
         </h1>
       </div>
 
@@ -59,7 +60,7 @@ const Tracker: React.FC = () => {
           
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-6">
-                <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-brutal font-bold uppercase tracking-widest">Hydration</span>
+                <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-brutal font-bold uppercase tracking-widest">{t('tracker_hydration')}</span>
             </div>
             
             <div className="flex items-baseline gap-1 mb-8">
@@ -86,7 +87,7 @@ const Tracker: React.FC = () => {
 
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-6">
-                <span className="bg-white/10 backdrop-blur-md text-rose-300 px-3 py-1 rounded-full text-[10px] font-brutal font-bold uppercase tracking-widest border border-white/10">Energy</span>
+                <span className="bg-white/10 backdrop-blur-md text-rose-300 px-3 py-1 rounded-full text-[10px] font-brutal font-bold uppercase tracking-widest border border-white/10">{t('tracker_energy')}</span>
             </div>
             
             <div className="flex items-baseline gap-1 mb-8">
@@ -100,7 +101,7 @@ const Tracker: React.FC = () => {
             </div>
 
             <button onClick={() => setShowMealModal(true)} className="w-full py-3 bg-white text-stone-900 hover:bg-stone-200 rounded-2xl font-bold text-xs transition">
-                + Log Meal
+                {t('tracker_log_meal_btn')}
             </button>
           </div>
         </div>
@@ -110,7 +111,7 @@ const Tracker: React.FC = () => {
       {/* Charts & Mood */}
       <div className="bg-white rounded-[2.5rem] p-6 shadow-sm border border-stone-100 mb-8">
           <div className="flex items-center justify-between mb-6">
-             <h3 className="text-xl font-editorial italic text-stone-900">Weekly Rhythm</h3>
+             <h3 className="text-xl font-editorial italic text-stone-900">{t('tracker_weekly_rhythm')}</h3>
              <div className="flex gap-2">
                 {['M','T','W','T','F','S','S'].map((d,i) => (
                     <div key={i} className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${i===4 ? 'bg-stone-900 text-white' : 'bg-stone-100 text-stone-400'}`}>{d}</div>
@@ -159,7 +160,7 @@ const Tracker: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-md animate-in fade-in duration-200">
            <div className="bg-white rounded-[2.5rem] w-full max-w-sm p-8 shadow-2xl animate-in zoom-in-95 duration-200">
                <div className="flex justify-between items-center mb-8">
-                 <h3 className="text-2xl font-editorial italic text-stone-900">Log Meal</h3>
+                 <h3 className="text-2xl font-editorial italic text-stone-900">{t('tracker_log_meal_title')}</h3>
                  <button onClick={() => setShowMealModal(false)} className="p-2 bg-stone-100 rounded-full hover:bg-stone-200"><X size={20} /></button>
                </div>
                
@@ -170,7 +171,7 @@ const Tracker: React.FC = () => {
                              key={type} onClick={() => setMealType(type)}
                              className={`p-4 rounded-2xl text-sm font-bold border transition ${mealType === type ? 'bg-stone-900 text-white border-stone-900' : 'bg-white border-stone-200 text-stone-500'}`}
                            >
-                              {type}
+                              {t(`meal_${type.toLowerCase()}` as any) || type}
                            </button>
                        ))}
                    </div>
@@ -185,7 +186,7 @@ const Tracker: React.FC = () => {
                    </div>
 
                    <button onClick={handleLogMeal} disabled={!mealCals} className="w-full bg-rose-500 text-white py-5 rounded-[1.5rem] font-bold text-lg hover:bg-rose-600 transition shadow-xl shadow-rose-200/50 disabled:opacity-50">
-                     Add to Log
+                     {t('tracker_add_to_log')}
                    </button>
                </div>
            </div>

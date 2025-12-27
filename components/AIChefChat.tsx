@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Sparkles, ChefHat, Mic, MoveUpRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,11 +14,15 @@ const AIChefChat: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // When language changes, update the welcome message if it's the only message
   useEffect(() => {
-    if (messages.length === 0) {
-       setMessages([{ id: 'welcome', role: 'model', text: t('chat_welcome'), timestamp: new Date() }]);
-    }
-  }, [t, messages.length]);
+    setMessages(prev => {
+        if (prev.length === 0 || (prev.length === 1 && prev[0].id === 'welcome')) {
+            return [{ id: 'welcome', role: 'model', text: t('chat_welcome'), timestamp: new Date() }];
+        }
+        return prev;
+    });
+  }, [t, language]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -85,10 +90,10 @@ const AIChefChat: React.FC = () => {
                     <ChefHat size={24} className="text-white" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-editorial italic font-bold text-stone-900">Chef AI</h2>
+                    <h2 className="text-2xl font-editorial italic font-bold text-stone-900">{t('gen_ai_chef')}</h2>
                     <div className="flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <p className="text-[10px] text-stone-400 font-brutal font-bold uppercase tracking-widest">Online</p>
+                        <p className="text-[10px] text-stone-400 font-brutal font-bold uppercase tracking-widest">{t('chat_chef_online')}</p>
                     </div>
                   </div>
                </div>
@@ -117,7 +122,7 @@ const AIChefChat: React.FC = () => {
                ))}
                {isTyping && (
                   <div className="flex items-center gap-1 px-4 text-stone-400 text-xs font-bold font-brutal uppercase tracking-widest animate-pulse">
-                      Chef is cooking<span className="animate-bounce">.</span><span className="animate-bounce delay-100">.</span><span className="animate-bounce delay-200">.</span>
+                      {t('chat_chef_cooking')}<span className="animate-bounce">.</span><span className="animate-bounce delay-100">.</span><span className="animate-bounce delay-200">.</span>
                   </div>
                )}
                <div ref={messagesEndRef} />
@@ -134,7 +139,7 @@ const AIChefChat: React.FC = () => {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                     className="flex-1 bg-transparent border-none outline-none text-base text-stone-900 placeholder:text-stone-400 font-medium h-12"
-                    placeholder="Ask for a recipe..."
+                    placeholder={t('chat_placeholder')}
                     autoFocus
                   />
                   <button 
