@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Droplets, Flame, Plus, X, Zap, Moon, Sun, Coffee, Utensils, Activity, ArrowUp, ArrowDown, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -290,73 +291,76 @@ const Tracker: React.FC = () => {
 
       </div>
 
-      {/* 3. LOG MEAL MODAL (Bottom Sheet Style) */}
-      <AnimatePresence>
-        {showMealModal && (
-            <motion.div 
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-stone-900/60 backdrop-blur-sm"
-                onClick={() => setShowMealModal(false)}
-            >
+      {/* 3. LOG MEAL MODAL (PORTALED) */}
+      {createPortal(
+        <AnimatePresence>
+            {showMealModal && (
                 <motion.div 
-                    initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="bg-[#F9F8F6] w-full max-w-md rounded-t-[2.5rem] sm:rounded-[2.5rem] p-6 shadow-2xl"
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-[150] flex items-end sm:items-center justify-center sm:p-4 bg-stone-900/60 backdrop-blur-sm font-sans"
+                    onClick={() => setShowMealModal(false)}
                 >
-                   <div className="flex justify-between items-center mb-8">
-                     <h3 className="text-2xl font-editorial italic text-stone-900 flex items-center gap-2">
-                         <Utensils size={24} className="text-rose-500" />
-                         {t('tracker_log_meal_title')}
-                     </h3>
-                     <button onClick={() => setShowMealModal(false)} className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-stone-500">
-                         <X size={20} />
-                     </button>
-                   </div>
-                   
-                   <div className="space-y-6">
-                       {/* Meal Type Selector */}
-                       <div className="grid grid-cols-4 gap-2">
-                           {['Breakfast', 'Lunch', 'Dinner', 'Snack'].map(type => (
-                               <button 
-                                 key={type} 
-                                 onClick={() => { vibrate(); setMealType(type); }}
-                                 className={`py-3 rounded-xl text-[10px] font-bold uppercase tracking-wider border transition-all ${
-                                     mealType === type 
-                                     ? 'bg-stone-900 text-white border-stone-900 shadow-lg scale-105' 
-                                     : 'bg-white border-stone-200 text-stone-400'
-                                 }`}
-                               >
-                                  {type}
-                               </button>
-                           ))}
-                       </div>
-                       
-                       {/* Numeric Input */}
-                       <div className="relative bg-white rounded-[2rem] p-4 shadow-inner border border-stone-100 flex items-center justify-center h-32">
-                         <input 
-                           type="number" 
-                           value={mealCals} 
-                           onChange={(e) => setMealCals(e.target.value)}
-                           className="w-full bg-transparent border-none outline-none text-6xl font-editorial italic text-stone-900 text-center placeholder:text-stone-200"
-                           placeholder="0" 
-                           autoFocus
-                         />
-                         <span className="absolute bottom-4 text-xs font-brutal font-bold text-stone-400 uppercase tracking-widest">calories</span>
-                       </div>
+                    <motion.div 
+                        initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+                        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="bg-[#F9F8F6] w-full max-w-md rounded-t-[2.5rem] sm:rounded-[2.5rem] p-6 shadow-2xl"
+                    >
+                    <div className="flex justify-between items-center mb-8">
+                        <h3 className="text-2xl font-editorial italic text-stone-900 flex items-center gap-2">
+                            <Utensils size={24} className="text-rose-500" />
+                            {t('tracker_log_meal_title')}
+                        </h3>
+                        <button onClick={() => setShowMealModal(false)} className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-stone-500">
+                            <X size={20} />
+                        </button>
+                    </div>
+                    
+                    <div className="space-y-6">
+                        {/* Meal Type Selector */}
+                        <div className="grid grid-cols-4 gap-2">
+                            {['Breakfast', 'Lunch', 'Dinner', 'Snack'].map(type => (
+                                <button 
+                                    key={type} 
+                                    onClick={() => { vibrate(); setMealType(type); }}
+                                    className={`py-3 rounded-xl text-[10px] font-bold uppercase tracking-wider border transition-all ${
+                                        mealType === type 
+                                        ? 'bg-stone-900 text-white border-stone-900 shadow-lg scale-105' 
+                                        : 'bg-white border-stone-200 text-stone-400'
+                                    }`}
+                                >
+                                    {type}
+                                </button>
+                            ))}
+                        </div>
+                        
+                        {/* Numeric Input */}
+                        <div className="relative bg-white rounded-[2rem] p-4 shadow-inner border border-stone-100 flex items-center justify-center h-32">
+                            <input 
+                            type="number" 
+                            value={mealCals} 
+                            onChange={(e) => setMealCals(e.target.value)}
+                            className="w-full bg-transparent border-none outline-none text-6xl font-editorial italic text-stone-900 text-center placeholder:text-stone-200"
+                            placeholder="0" 
+                            autoFocus
+                            />
+                            <span className="absolute bottom-4 text-xs font-brutal font-bold text-stone-400 uppercase tracking-widest">calories</span>
+                        </div>
 
-                       <button 
-                           onClick={handleLogMeal} 
-                           disabled={!mealCals} 
-                           className="w-full bg-rose-500 text-white py-5 rounded-[1.5rem] font-bold text-lg hover:bg-rose-600 active:scale-95 transition-all shadow-xl shadow-rose-200/50 disabled:opacity-50 disabled:shadow-none"
-                       >
-                         {t('tracker_add_to_log')}
-                       </button>
-                   </div>
+                        <button 
+                            onClick={handleLogMeal} 
+                            disabled={!mealCals} 
+                            className="w-full bg-rose-500 text-white py-5 rounded-[1.5rem] font-bold text-lg hover:bg-rose-600 active:scale-95 transition-all shadow-xl shadow-rose-200/50 disabled:opacity-50 disabled:shadow-none"
+                        >
+                            {t('tracker_add_to_log')}
+                        </button>
+                    </div>
+                    </motion.div>
                 </motion.div>
-            </motion.div>
-        )}
-      </AnimatePresence>
+            )}
+        </AnimatePresence>,
+        document.body
+      )}
 
     </div>
   );

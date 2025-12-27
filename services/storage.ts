@@ -1,19 +1,20 @@
+
 import { UserProfile } from "../types";
 
-const STORAGE_KEY = 'nourishher_user_v4'; // Bump version for pantry schema
+const STORAGE_KEY = 'nourishher_user_v5'; // Bump version
 
 const DEFAULT_USER: UserProfile = {
   id: 'user_123',
-  name: "Sarah",
-  email: "sarah@example.com",
-  avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  name: "User",
+  email: "user@example.com",
+  avatarUrl: "", // Empty by default for generic icon
   goals: ["Weight Loss", "More Energy"],
   dietaryPreferences: ["Low Carb", "High Protein"],
   subscription: {
-    plan: 'premium',
+    plan: 'free',
     status: 'active',
     nextBillingDate: '2025-11-24',
-    price: '$9.99/mo'
+    price: '$0/mo'
   },
   settings: {
     notifications: {

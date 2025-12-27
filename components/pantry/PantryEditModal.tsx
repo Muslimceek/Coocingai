@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Scan, QrCode, Calendar, Trash2, Leaf, Milk, Drumstick, Cookie, Tag } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { X, Scan, QrCode, Calendar, Trash2, Leaf, Milk, Drumstick, Cookie, Tag, Flame } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PantryItem } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -29,6 +30,7 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
   const [unit, setUnit] = useState('pcs');
   const [expiry, setExpiry] = useState('');
   const [category, setCategory] = useState<PantryItem['category']>('other');
+  const [calories, setCalories] = useState('');
   
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,6 +46,7 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
         setUnit(initialItem.unit);
         setExpiry(initialItem.expiryDate ? initialItem.expiryDate.split('T')[0] : '');
         setCategory(initialItem.category || 'other');
+        setCalories(initialItem.calories ? initialItem.calories.toString() : '');
       } else {
         // Reset defaults for new item
         setName('');
@@ -51,6 +54,7 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
         setUnit('pcs');
         setExpiry('');
         setCategory('other');
+        setCalories('');
       }
     }
   }, [isOpen, initialItem]);
@@ -62,7 +66,8 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
       quantity: qty || '1',
       unit,
       expiryDate: expiry ? new Date(expiry).toISOString() : undefined,
-      category
+      category,
+      calories: calories ? parseInt(calories) : undefined
     });
   };
 
@@ -75,15 +80,19 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64String = reader.result as string;
+        // Call service. It returns null if error or NO KEY.
         const analysis = await identifyPantryItem(base64String, language);
+        
         if (analysis) {
           setName(analysis.name);
           setQty(analysis.quantity.toString());
           setUnit(analysis.unit);
           setCategory(analysis.category);
+          if (analysis.calories) setCalories(analysis.calories.toString());
           if (analysis.expiryDate) setExpiry(analysis.expiryDate);
         } else {
-          alert(t('pantry_analyzing_error'));
+          // If no key or error, we alert instead of filling with "Apple"
+          alert("AI Scan failed or API Key is missing. Please enter details manually.");
         }
         setIsAnalyzing(false);
       };
@@ -91,6 +100,7 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
     } catch (err) {
       console.error(err);
       setIsAnalyzing(false);
+      alert("Error reading file.");
     }
   };
 
@@ -104,21 +114,21 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
     }
   };
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div 
           initial={{ opacity: 0 }} 
           animate={{ opacity: 1 }} 
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-stone-900/60 backdrop-blur-sm"
+          className="fixed inset-0 z-[150] flex items-end sm:items-center justify-center sm:p-4 bg-stone-900/60 backdrop-blur-sm font-sans"
         >
           <motion.div 
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="bg-[#F9F8F6] w-full max-w-md rounded-t-[2.5rem] sm:rounded-[2.5rem] p-6 shadow-2xl overflow-hidden relative"
+            className="bg-[#F9F8F6] w-full max-w-md rounded-t-[2.5rem] sm:rounded-[2.5rem] p-6 shadow-2xl overflow-hidden relative max-h-[90vh] overflow-y-auto pb-10"
           >
             {/* Loading AI Overlay */}
             {isAnalyzing && (
@@ -177,7 +187,7 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
                     value={name} 
                     onChange={e => setName(e.target.value)} 
                     className="w-full text-lg font-bold outline-none text-stone-800 placeholder:text-stone-300 bg-transparent" 
-                    placeholder="e.g. Avocado"
+                    placeholder="e.g. Bounty, Avocado"
                     autoFocus={!initialItem}
                 />
               </div>
@@ -207,6 +217,23 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
                   >
                     {units.map(u => <option key={u} value={u}>{u}</option>)}
                   </select>
+                </div>
+              </div>
+
+              {/* Calories (New Field) */}
+              <div className="bg-white p-4 rounded-2xl border border-stone-100 shadow-sm flex items-center gap-3">
+                <Flame size={20} className="text-orange-400" />
+                <div className="flex-1">
+                  <label className="text-[10px] font-brutal font-bold text-stone-400 uppercase tracking-widest block">
+                    Calories (kcal)
+                  </label>
+                  <input 
+                    type="number"
+                    value={calories} 
+                    onChange={e => setCalories(e.target.value)} 
+                    className="w-full text-lg font-bold outline-none text-stone-800 bg-transparent mt-1"
+                    placeholder="e.g. 250" 
+                  />
                 </div>
               </div>
               
@@ -265,7 +292,8 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 

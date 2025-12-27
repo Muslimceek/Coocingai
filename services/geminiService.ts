@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type, GenerateContentResponse, Chat } from "@google/genai";
 import { GeneratedRecipe, Language, PantryItemAnalysis } from "../types";
 
@@ -30,9 +31,10 @@ const PANTRY_ITEM_SCHEMA = {
     quantity: { type: Type.NUMBER },
     unit: { type: Type.STRING },
     expiryDate: { type: Type.STRING },
-    category: { type: Type.STRING, enum: ["produce", "dairy", "protein", "pantry", "other"] }
+    category: { type: Type.STRING, enum: ["produce", "dairy", "protein", "pantry", "other"] },
+    calories: { type: Type.NUMBER, description: "Estimated calories for this item quantity" }
   },
-  required: ["name", "quantity", "unit", "category"]
+  required: ["name", "quantity", "unit", "category", "calories"]
 };
 
 // --- CORE FUNCTION ---
@@ -118,21 +120,25 @@ export const generateDishImage = async (title: string, ingredients: string[]): P
 
 export const identifyPantryItem = async (base64Image: string, language: Language): Promise<PantryItemAnalysis | null> => {
   const apiKey = process.env.API_KEY;
+  
+  // Strict check: if no key, we can't do AI analysis. Return null to let UI handle "Manual Entry" prompt.
   if (!apiKey) {
-    await new Promise(r => setTimeout(r, 1000));
-    return getMockPantryItem();
+    console.warn("No API Key found. Returning null for manual entry.");
+    return null; 
   }
 
   try {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const base64Data = base64Image.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "");
     
+    const langInstruction = language === 'ru' ? 'Use Russian language for the name.' : 'Use English.';
+    
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-3-flash-preview', // Capable vision model
       contents: {
         parts: [
           { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
-          { text: `Identify this food item. Return JSON.` }
+          { text: `Identify this product accurately. If it is a specific brand (e.g. Bounty, Snickers, Coca-Cola), USE THE BRAND NAME. Estimate the quantity visible. Predict expiry date based on product type. Estimate CALORIES per unit/serving. ${langInstruction} Return JSON.` }
         ]
       },
       config: {
@@ -145,7 +151,8 @@ export const identifyPantryItem = async (base64Image: string, language: Language
     return JSON.parse(response.text) as PantryItemAnalysis;
   } catch (error) {
     console.error("Scan failed", error);
-    return getMockPantryItem();
+    // Return null so the UI can show "Scan failed" instead of filling fake data
+    return null;
   }
 };
 
@@ -208,10 +215,12 @@ const getMockRecipe = (ingredients: string[], lang: Language): GeneratedRecipe =
   };
 };
 
+// Deprecated Mock for Pantry (We now return null on failure for better UX)
 const getMockPantryItem = (): PantryItemAnalysis => ({
-  name: "Apple (Demo)",
+  name: "Apple (Demo - No API Key)",
   quantity: 1,
   unit: "pcs",
   expiryDate: new Date(Date.now() + 86400000 * 7).toISOString().split('T')[0],
-  category: "produce"
+  category: "produce",
+  calories: 52
 });

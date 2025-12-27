@@ -72,6 +72,7 @@ export interface PantryItem {
   unit: string;
   expiryDate?: string; // ISO Date string
   category?: 'produce' | 'dairy' | 'protein' | 'pantry' | 'other';
+  calories?: number; // New: Calories per unit/serving
 }
 
 // New Interface for AI Analysis
@@ -81,6 +82,7 @@ export interface PantryItemAnalysis {
   unit: string;
   expiryDate?: string;
   category: 'produce' | 'dairy' | 'protein' | 'pantry' | 'other';
+  calories?: number; // New: Estimated calories
 }
 
 export interface UserProfile {

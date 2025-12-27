@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Settings, Crown, ChevronRight, Globe, Camera, 
   Edit2, User, Sparkles, X, Shield, 
@@ -222,13 +223,14 @@ const Profile: React.FC = () => {
          </div>
       </div>
 
-      {/* --- MODALS --- */}
-      <AnimatePresence>
+      {/* --- MODALS (PORTALED) --- */}
+      {createPortal(
+        <AnimatePresence>
           {activeModal && (
               <motion.div 
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                   onClick={() => setActiveModal(null)}
-                  className="fixed inset-0 z-[150] bg-stone-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4"
+                  className="fixed inset-0 z-[150] bg-stone-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 font-sans"
               >
                   <motion.div 
                       initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
@@ -393,7 +395,9 @@ const Profile: React.FC = () => {
                   </motion.div>
               </motion.div>
           )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
 
     </div>
   );
