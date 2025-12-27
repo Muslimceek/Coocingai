@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   Compass, ArrowUpRight, Sparkles, ChefHat, 
   Flame, Clock, CloudRain, Sun, Moon, Wind, ArrowRight,
-  Play
+  Play, Hexagon, Star
 } from 'lucide-react';
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 import { RecipeCollection, GeneratedRecipe } from '../../types';
@@ -31,18 +31,26 @@ const getMockCollections = (t: (key: string) => string): (RecipeCollection & { v
   },
   {
     id: 'cozy',
-    title: "Rainy Day Comfort", // Dynamic Title
-    description: "Warm your soul",
+    title: t('col_date'), // "Rainy Day Comfort"
+    description: t('col_date_desc'),
     gradient: 'from-stone-500 to-stone-700',
     vibeColor: '#78716c', // Stone
     mood: 'Cozy',
     icon: '🌧️',
-    recipes: []
+    recipes: [
+      {
+        id: 'ex-2', title: 'Velvet Mushroom Risotto', description: 'Creamy, earthy, and comforting.',
+        ingredients: ['Arborio Rice', 'Mushrooms', 'Parmesan', 'White Wine'], instructions: ['Sauté', 'Simmer', 'Stir', 'Serve'],
+        calories: 450, prepTimeMinutes: 40, cuisine: 'Italian', mealType: 'Dinner', difficulty: 'Medium', servings: 2,
+        imageUrl: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=800&q=80', rating: 4.9, author: 'Chef Luigi',
+        tips: ['Stir constantly.'], cookCount: 890, likesCount: 200
+      }
+    ]
   },
   {
     id: 'green',
-    title: "Deep Detox",
-    description: "Reset your system",
+    title: t('col_energy'), // "Deep Detox"
+    description: t('col_energy_desc'),
     gradient: 'from-emerald-400 to-teal-600',
     vibeColor: '#34d399', // Emerald
     mood: 'Fresh',
@@ -51,8 +59,8 @@ const getMockCollections = (t: (key: string) => string): (RecipeCollection & { v
   },
    {
     id: 'sweet',
-    title: "Midnight Cravings",
-    description: "Guilt-free pleasures",
+    title: t('col_kids'), // "Midnight Cravings"
+    description: t('col_kids_desc'),
     gradient: 'from-violet-500 to-fuchsia-500',
     vibeColor: '#a78bfa', // Violet
     mood: 'Indulgent',
@@ -72,12 +80,13 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
   const [activeVibe, setActiveVibe] = useState<string>('#e7e5e4'); // Default stone-200
   
   const containerRef = useRef<HTMLDivElement>(null);
+  // We utilize scroll progress for parallax, but simplified for reliability here
   const { scrollYProgress } = useScroll({ container: containerRef });
   
   const collections = getMockCollections(t);
-  const trendingRecipes = collections.flatMap(c => c.recipes).slice(0, 1); // Hero item
+  const trendingRecipe = collections[0].recipes[0]; // Hero item
 
-  // --- TIME CONTEXT LOGIC ---
+  // --- TIME CONTEXT LOGIC (Circadian UI) ---
   const hour = new Date().getHours();
   let timeIcon = <Sun />;
   let greeting = "Good Morning";
@@ -90,16 +99,18 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
   };
 
   // --- RENDER ---
+  // If a recipe is clicked, we show the full-screen modal (Warp Transition)
   if (viewedRecipe) {
     return (
         <div className="fixed inset-0 z-[60] bg-[#F9F8F6] overflow-y-auto">
             <motion.div 
-                initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 50, scale: 0.95 }} 
+                animate={{ opacity: 1, y: 0, scale: 1 }}
                 className="relative pb-24"
             >
                 <button 
                     onClick={() => setViewedRecipe(null)} 
-                    className="absolute top-6 left-6 z-50 w-12 h-12 bg-white/20 backdrop-blur-xl rounded-full border border-white/30 flex items-center justify-center text-white shadow-lg"
+                    className="absolute top-6 left-6 z-50 w-12 h-12 bg-white/20 backdrop-blur-xl rounded-full border border-white/30 flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform"
                 >
                     <ArrowRight className="rotate-180" size={24} />
                 </button>
@@ -118,6 +129,7 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
     <div ref={containerRef} className="h-full overflow-y-auto pb-32 relative no-scrollbar perspective-1000">
       
       {/* 1. ATMOSPHERIC BACKGROUND (Adaptive Liquid) */}
+      {/* This element shifts color based on scroll/focus to create the "Verse" feeling */}
       <motion.div 
         animate={{ backgroundColor: activeVibe }}
         transition={{ duration: 1.5, ease: "easeInOut" }}
@@ -137,18 +149,24 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
       </div>
 
       {/* 3. HERO PORTAL (The "Window") */}
-      {trendingRecipes.map(r => (
-          <HeroPortal key={r.id} recipe={r} onClick={() => handleRecipeOpen(r)} />
-      ))}
+      {trendingRecipe && (
+          <HeroPortal recipe={trendingRecipe} onClick={() => handleRecipeOpen(trendingRecipe)} />
+      )}
 
-      {/* 4. AI SOMMELIER (Hyper-Innovation) */}
+      {/* 4. AI SOMMELIER (The Killer Feature) */}
       <div className="my-10 px-2 relative z-10">
           <div className="p-[1px] rounded-[2rem] bg-gradient-to-r from-rose-300 via-purple-300 to-blue-300 shadow-xl shadow-rose-100/50">
               <button 
-                onClick={() => { if(navigator.vibrate) navigator.vibrate([10, 50]); }}
+                onClick={() => { 
+                    if(navigator.vibrate) navigator.vibrate([10, 50, 20]); 
+                    // In a real app, this would trigger an AI call based on user context
+                    const suggestion = collections[1].recipes[0]; 
+                    if(suggestion) handleRecipeOpen(suggestion);
+                }}
                 className="w-full bg-white/90 backdrop-blur-xl rounded-[2rem] p-6 flex items-center justify-between group active:scale-[0.98] transition-transform"
               >
                   <div className="flex items-center gap-4">
+                      {/* Animated Core */}
                       <div className="w-12 h-12 bg-stone-900 text-white rounded-full flex items-center justify-center relative overflow-hidden">
                           <Sparkles size={20} className="relative z-10 animate-pulse" />
                           <div className="absolute inset-0 bg-gradient-to-tr from-rose-500 to-purple-500 opacity-50 animate-spin-slow" />
@@ -176,7 +194,7 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
 
           <div className="grid grid-cols-2 gap-3">
               {collections.map((col, idx) => {
-                  // Asymmetric Logic: Index 0 is wide, rest are standard
+                  // Asymmetric Logic: Index 0 is wide, rest are standard vertical cards
                   const isWide = idx === 0 || idx === 3;
                   
                   return (
@@ -200,7 +218,6 @@ const ExploreTab: React.FC<ExploreTabProps> = ({ t, onToggleFavorite, savedRecip
 // --- SUB-COMPONENTS (ATOMS) ---
 
 const HeroPortal = ({ recipe, onClick }: { recipe: GeneratedRecipe, onClick: () => void }) => {
-    // Parallax logic would ideally use scroll hook, keeping simple for reliability
     return (
         <motion.div 
             onClick={onClick}
@@ -219,8 +236,8 @@ const HeroPortal = ({ recipe, onClick }: { recipe: GeneratedRecipe, onClick: () 
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/10" />
             
             <div className="absolute top-6 right-6">
-                <div className="px-3 py-1 bg-white/20 backdrop-blur-md border border-white/20 rounded-full text-white text-[10px] font-bold uppercase tracking-widest">
-                    Trending Now
+                <div className="px-3 py-1 bg-white/20 backdrop-blur-md border border-white/20 rounded-full text-white text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
+                    <Hexagon size={10} fill="currentColor" /> Trending
                 </div>
             </div>
 
@@ -248,15 +265,16 @@ const CollectionPortal = ({ collection, isWide }: { collection: any, isWide: boo
     return (
         <motion.div 
             whileHover={{ y: -5 }}
+            whileTap={{ scale: 0.98 }}
             className="w-full h-full rounded-[2rem] relative overflow-hidden group cursor-pointer border border-white/50"
         >
             {/* Background Gradient */}
             <div className={`absolute inset-0 bg-gradient-to-br ${collection.gradient} opacity-90 transition-all duration-500 group-hover:opacity-100`} />
             
-            {/* Noise Texture */}
+            {/* Noise Texture for physical feel */}
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
             
-            {/* Icon Floating */}
+            {/* Icon Floating - Parallax effect simulated via transform */}
             <div className={`absolute ${isWide ? 'right-4 top-1/2 -translate-y-1/2' : 'right-[-10px] bottom-[-10px]'} text-8xl opacity-20 transform group-hover:scale-110 group-hover:rotate-12 transition-transform duration-700`}>
                 {collection.icon}
             </div>

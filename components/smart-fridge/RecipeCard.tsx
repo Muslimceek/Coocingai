@@ -1,9 +1,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  PlayCircle, Heart, ChefHat, Clock, Flame, Utensils, Sparkles, 
-  Check, Share2, ArrowLeft, X, ChevronRight, ChevronLeft, RotateCcw
+  Play, Heart, ChefHat, Clock, Flame, Utensils, Sparkles, 
+  Check, Share2, ArrowLeft, ArrowRight, X, ChevronRight, ChevronLeft, RotateCcw,
+  Maximize2, Minimize2
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { GeneratedRecipe } from '../../types';
 
 interface RecipeCardProps {
@@ -23,342 +25,194 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
 }) => {
   const [checkedIngredients, setCheckedIngredients] = useState<Set<number>>(new Set());
   const [checkedSteps, setCheckedSteps] = useState<Set<number>>(new Set());
-  const [isLoaded, setIsLoaded] = useState(false);
   
   // Cooking Mode States
   const [cookingMode, setCookingMode] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [showStartButton, setShowStartButton] = useState(true);
 
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
+  // Haptics
+  const vibrate = (pattern: number | number[] = 10) => {
+    if(typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern);
+  };
 
   const toggleIngredient = (idx: number) => {
+      vibrate(10);
       const newSet = new Set(checkedIngredients);
       if(newSet.has(idx)) newSet.delete(idx); else newSet.add(idx);
       setCheckedIngredients(newSet);
-      if(navigator.vibrate) navigator.vibrate(10);
-  };
-
-  const toggleStep = (idx: number) => {
-      if (cookingMode) {
-          // In cooking mode, clicking a step sets it as current
-          setCurrentStep(idx);
-          if(navigator.vibrate) navigator.vibrate(10);
-          return;
-      }
-      const newSet = new Set(checkedSteps);
-      if(newSet.has(idx)) newSet.delete(idx); else newSet.add(idx);
-      setCheckedSteps(newSet);
-      if(navigator.vibrate) navigator.vibrate([10, 30, 10]);
   };
 
   const handleStartCooking = () => {
+    vibrate([20, 30]); // Engage "Engine" vibration
     setCookingMode(true);
     setCurrentStep(0);
-    setShowStartButton(false);
-    // Smooth scroll to first step
-    setTimeout(() => {
-        const el = document.getElementById(`step-${recipe.id}-0`);
-        if(el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
-  };
-
-  const handleNextStep = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (currentStep < recipe.instructions.length - 1) {
-        const next = currentStep + 1;
-        setCurrentStep(next);
-        const el = document.getElementById(`step-${recipe.id}-${next}`);
-        if(el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        if(navigator.vibrate) navigator.vibrate(10);
-    } else {
-        // Finish
-        setCookingMode(false);
-        setShowStartButton(true);
-        // Mark all as done
-        const allSteps = new Set(recipe.instructions.map((_, i) => i));
-        setCheckedSteps(allSteps);
+    // Request Wake Lock if available (Innovation: Keeps screen on while cooking)
+    if ('wakeLock' in navigator) {
+        try { (navigator as any).wakeLock.request('screen'); } catch(e) {}
     }
   };
 
-  const handlePrevStep = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (currentStep > 0) {
-        const prev = currentStep - 1;
-        setCurrentStep(prev);
-        const el = document.getElementById(`step-${recipe.id}-${prev}`);
-        if(el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+  const handleStepChange = (newStep: number) => {
+      if (newStep >= 0 && newStep < recipe.instructions.length) {
+          vibrate(15);
+          setCurrentStep(newStep);
+      } else if (newStep === recipe.instructions.length) {
+          // Finish
+          vibrate([50, 50, 50]);
+          setCookingMode(false);
+      }
   };
 
-  const handleExitCooking = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      setCookingMode(false);
-      setShowStartButton(true);
-  };
+  // --- COOKING MODE OVERLAY (IMMERSIVE "FOCUS" UI) ---
+  if (cookingMode) {
+      return (
+          <motion.div 
+             initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+             className="fixed inset-0 z-[100] bg-[#1a1918] text-[#F9F8F6] flex flex-col overflow-hidden"
+          >
+              {/* Progress Bar */}
+              <div className="h-1.5 w-full bg-white/10">
+                  <motion.div 
+                     animate={{ width: `${((currentStep + 1) / recipe.instructions.length) * 100}%` }}
+                     className="h-full bg-rose-500"
+                  />
+              </div>
 
+              {/* Header */}
+              <div className="flex justify-between items-center p-6">
+                  <button onClick={() => setCookingMode(false)} className="p-2 bg-white/10 rounded-full text-white/60 hover:text-white">
+                      <X size={20} />
+                  </button>
+                  <div className="flex flex-col items-center">
+                      <span className="text-[10px] font-brutal font-bold uppercase tracking-widest text-white/50">STEP {currentStep + 1} OF {recipe.instructions.length}</span>
+                  </div>
+                  <div className="w-10" /> {/* Spacer */}
+              </div>
+
+              {/* Main Step Content */}
+              <div className="flex-1 flex flex-col justify-center px-8 relative">
+                  <AnimatePresence mode="wait">
+                      <motion.div
+                         key={currentStep}
+                         initial={{ opacity: 0, x: 50 }}
+                         animate={{ opacity: 1, x: 0 }}
+                         exit={{ opacity: 0, x: -50 }}
+                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                         className="space-y-6"
+                      >
+                          <h2 className="text-3xl md:text-5xl font-editorial leading-tight">
+                              {recipe.instructions[currentStep]}
+                          </h2>
+                          
+                          {/* Ingredients needed for this step? (Advanced AI feature placeholder) */}
+                          <div className="p-4 bg-white/5 rounded-2xl border border-white/10 inline-block">
+                              <span className="text-[10px] uppercase tracking-widest text-rose-400 font-bold block mb-1">Focus</span>
+                              <p className="text-sm text-white/70">Read carefully before proceeding.</p>
+                          </div>
+                      </motion.div>
+                  </AnimatePresence>
+              </div>
+
+              {/* Controls - Bottom Heavy for Thumb Reach */}
+              <div className="p-8 pb-12 flex justify-between items-center bg-gradient-to-t from-black/50 to-transparent">
+                  <button 
+                      onClick={() => handleStepChange(currentStep - 1)}
+                      disabled={currentStep === 0}
+                      className="w-14 h-14 rounded-full border border-white/20 flex items-center justify-center text-white disabled:opacity-20"
+                  >
+                      <ChevronLeft size={24} />
+                  </button>
+                  
+                  <button 
+                      onClick={() => handleStepChange(currentStep + 1)}
+                      className="flex-1 mx-6 h-20 bg-white text-black rounded-[2rem] font-bold text-xl flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                  >
+                      {currentStep === recipe.instructions.length - 1 ? 'Finish' : 'Next Step'}
+                      {currentStep !== recipe.instructions.length - 1 && <ArrowRight size={20} />}
+                  </button>
+              </div>
+          </motion.div>
+      )
+  }
+
+  // --- STANDARD CARD VIEW ---
   return (
-    <div className={`relative w-full bg-[#F9F8F6] text-stone-900 overflow-hidden mb-12 rounded-[2.5rem] shadow-2xl transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+    <div className="relative w-full bg-white rounded-[2.5rem] overflow-hidden shadow-xl shadow-stone-200/50 border border-white/60">
        
-       {/* 1. IMMERSIVE HERO: Borderless & Full Bleed */}
-       <div className={`relative w-full overflow-hidden group transition-all duration-700 ${cookingMode ? 'h-[20vh]' : 'h-[65vh]'}`}>
-         <div className="absolute inset-0 bg-stone-200 animate-pulse" /> {/* Placeholder */}
-         
-         <img 
-           src={recipe.imageUrl || `https://picsum.photos/seed/${recipe.id}/800/1200`} 
-           alt={recipe.title} 
-           className={`w-full h-full object-cover transition-all duration-[2s] ease-out will-change-transform ${imageLoading ? 'opacity-0 scale-105' : 'opacity-100 scale-100'}`}
-           loading="lazy"
-         />
-         
-         {/* Organic Gradient Mask */}
-         <div className="absolute inset-0 bg-gradient-to-t from-[#F9F8F6] via-[#F9F8F6]/20 to-black/20" />
-         
-         {/* Top Navigation / Status (Floating) */}
-         <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-20">
-            <div className="flex gap-2">
-                {recipe.cuisine && (
-                    <span className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-xl border border-white/10 text-white font-brutal font-bold text-[10px] uppercase tracking-widest shadow-lg">
-                        {recipe.cuisine}
-                    </span>
-                )}
-            </div>
-            
-            {/* Floating Glass Controls */}
-            <div className="flex flex-col gap-3">
-                <button 
-                    onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
-                    className={`w-12 h-12 rounded-full backdrop-blur-3xl border border-white/20 flex items-center justify-center shadow-lg transition-all duration-300 active:scale-90 hover:scale-105 ${isSaved ? 'bg-rose-500 text-white' : 'bg-black/20 text-white hover:bg-black/30'}`}
-                >
-                    <Heart size={20} fill={isSaved ? "currentColor" : "none"} strokeWidth={isSaved ? 0 : 2} />
-                </button>
-                
-                {/* Reveal Start Button if Hidden */}
-                {!showStartButton && !cookingMode && (
-                    <button 
-                        onClick={() => setShowStartButton(true)}
-                        className="w-12 h-12 rounded-full bg-stone-900 text-white flex items-center justify-center shadow-lg hover:scale-105 transition-all animate-in fade-in zoom-in"
-                    >
-                        <ChefHat size={20} />
-                    </button>
-                )}
-            </div>
-         </div>
+       {/* 1. HERO IMAGE (Parallax Effect) */}
+       <div className="relative h-[400px] w-full group overflow-hidden">
+           <img 
+             src={recipe.imageUrl || `https://picsum.photos/seed/${recipe.id}/800/1200`} 
+             alt={recipe.title} 
+             className={`w-full h-full object-cover transition-all duration-[2s] ${imageLoading ? 'opacity-0 scale-110 blur-md' : 'opacity-100 scale-100 blur-0'}`}
+           />
+           
+           {/* Gradient Overlay */}
+           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/10 opacity-80" />
+           
+           {/* Top Badges */}
+           <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-10">
+               <span className="px-3 py-1 bg-white/20 backdrop-blur-md border border-white/10 rounded-full text-[10px] font-bold text-white uppercase tracking-widest">
+                   {recipe.cuisine || 'Global'}
+               </span>
+               <button 
+                  onClick={(e) => { e.stopPropagation(); vibrate(10); onToggleFavorite(); }}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all active:scale-90 ${isSaved ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/40' : 'bg-black/30 text-white'}`}
+               >
+                   <Heart size={18} fill={isSaved ? "currentColor" : "none"} />
+               </button>
+           </div>
 
-         {/* Parallax Typography Title */}
-         <div className={`absolute bottom-0 left-0 w-full px-6 transition-all duration-700 z-10 pointer-events-none ${cookingMode ? 'pb-4 opacity-0 md:opacity-100' : 'pb-20'}`}>
-            <h1 className={`font-editorial italic tracking-tight text-stone-900 drop-shadow-sm mb-4 transition-all duration-700 ${cookingMode ? 'text-3xl' : 'text-5xl md:text-7xl leading-[0.9]'}`}>
-              {recipe.title}
-            </h1>
-            {!cookingMode && recipe.author && (
-                 <div className="flex items-center gap-3">
-                     <div className="h-[1px] w-8 bg-stone-900"></div>
-                     <p className="text-stone-600 text-xs font-brutal font-bold uppercase tracking-widest">
-                        {recipe.author}
-                     </p>
-                 </div>
-             )}
-         </div>
+           {/* Title Block */}
+           <div className="absolute bottom-0 left-0 right-0 p-6 z-10 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+               <h1 className="font-editorial italic text-4xl text-white mb-2 leading-[0.9] drop-shadow-md">
+                   {recipe.title}
+               </h1>
+               <div className="flex items-center gap-4 text-white/80 text-xs font-medium">
+                   <span className="flex items-center gap-1"><Clock size={14} className="text-rose-400" /> {recipe.prepTimeMinutes}m</span>
+                   <span className="flex items-center gap-1"><Flame size={14} className="text-orange-400" /> {recipe.calories} kcal</span>
+               </div>
+           </div>
        </div>
 
-       {/* 2. KINETIC STATS: Bento-Stretch (Hidden in Cooking Mode) */}
-       {!cookingMode && (
-        <div className="relative px-6 -mt-12 z-20 animate-in fade-in duration-500">
-            <div className="bg-white/70 backdrop-blur-xl border border-white/60 rounded-[2rem] p-3 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] flex justify-between items-center">
-                
-                <div className="flex-1 py-3 text-center border-r border-stone-200/50">
-                    <span className="block text-[9px] font-brutal font-bold text-stone-400 uppercase tracking-widest mb-1">{t('recipe_time')}</span>
-                    <span className="text-xl font-editorial italic text-stone-900">{recipe.prepTimeMinutes}<span className="text-xs not-italic ml-0.5 opacity-50 font-sans">m</span></span>
-                </div>
+       {/* 2. INGREDIENTS (Checklist) */}
+       <div className="p-6">
+           <div className="flex items-center justify-between mb-4">
+               <h3 className="font-brutal font-bold text-xs uppercase tracking-widest text-stone-400">Inventory</h3>
+               <span className="text-xs font-bold bg-stone-100 px-2 py-1 rounded-md text-stone-600">{recipe.ingredients.length} items</span>
+           </div>
+           
+           <div className="space-y-2 mb-8">
+               {recipe.ingredients.map((ing, i) => (
+                   <button 
+                       key={i} 
+                       onClick={() => toggleIngredient(i)}
+                       className={`w-full flex items-center gap-4 p-3 rounded-xl border transition-all text-left group active:scale-[0.99]
+                           ${checkedIngredients.has(i) ? 'bg-stone-50 border-transparent opacity-60' : 'bg-white border-stone-100 hover:border-rose-100 shadow-sm'}
+                       `}
+                   >
+                       <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${checkedIngredients.has(i) ? 'bg-stone-300 border-stone-300' : 'border-stone-300 group-hover:border-rose-300'}`}>
+                           {checkedIngredients.has(i) && <Check size={12} className="text-white" />}
+                       </div>
+                       <span className={`flex-1 font-medium ${checkedIngredients.has(i) ? 'line-through text-stone-400' : 'text-stone-800'}`}>
+                           {ing}
+                       </span>
+                   </button>
+               ))}
+           </div>
 
-                <div className="flex-1 py-3 text-center border-r border-stone-200/50">
-                    <span className="block text-[9px] font-brutal font-bold text-stone-400 uppercase tracking-widest mb-1">{t('recipe_cals')}</span>
-                    <span className="text-xl font-editorial italic text-stone-900">{recipe.calories}</span>
-                </div>
-
-                <div className="flex-1 py-3 text-center">
-                    <span className="block text-[9px] font-brutal font-bold text-stone-400 uppercase tracking-widest mb-1">{t('recipe_serves')}</span>
-                    <span className="text-xl font-editorial italic text-stone-900">{recipe.servings || 2}</span>
-                </div>
-
-            </div>
-        </div>
-       )}
-
-       {/* 3. CONTENT STREAM */}
-       <div className={`p-6 md:p-8 pb-32 space-y-16 bg-[#F9F8F6] transition-all duration-700 ${cookingMode ? '-mt-6 rounded-t-[3rem] z-30 relative shadow-[0_-20px_40px_rgba(0,0,0,0.05)]' : ''}`}>
-          
-          {!cookingMode && (
-              <p className="text-lg font-light leading-relaxed text-stone-600 first-letter:text-5xl first-letter:font-editorial first-letter:float-left first-letter:mr-3 first-letter:mt-[-4px]">
-                {recipe.description}
-              </p>
-          )}
-
-          {/* AI Tips */}
-          {!cookingMode && recipe.tips && recipe.tips.length > 0 && (
-             <div className="relative bg-gradient-to-br from-rose-100/50 to-orange-100/50 p-8 rounded-[2rem] border border-white/50 overflow-hidden">
-                <div className="absolute -top-4 -right-4 text-rose-200 opacity-20 rotate-12">
-                    <Sparkles size={120} />
-                </div>
-                <h4 className="font-brutal font-bold text-xs uppercase tracking-[0.2em] text-rose-500 mb-6 flex items-center gap-2 relative z-10">
-                    <Sparkles size={14} /> {t('recipe_chef_secret')}
-                </h4>
-                <ul className="space-y-4 relative z-10">
-                    {recipe.tips.map((tip, idx) => (
-                        <li key={idx} className="flex gap-4 text-stone-800 text-lg font-editorial italic leading-tight">
-                            <span className="text-rose-400 font-brutal not-italic text-xs font-bold mt-1.5">0{idx+1}</span>
-                            {tip}
-                        </li>
-                    ))}
-                </ul>
-             </div>
-          )}
-          
-          {/* Ingredients - "The Elements" */}
-          <section className={cookingMode ? 'opacity-40 hover:opacity-100 transition-opacity' : ''}>
-            <div className="flex items-center justify-between mb-6 sticky top-0 bg-[#F9F8F6]/90 backdrop-blur-md py-4 z-10">
-                <h2 className="text-xs font-brutal font-black uppercase tracking-[0.2em] flex items-center gap-3 text-stone-400">
-                    {t('recipe_elements')}
-                    <span className="w-8 h-px bg-stone-300"></span>
-                </h2>
-                <span className="bg-stone-900 text-white text-[9px] font-bold px-2 py-1 rounded-lg">{recipe.ingredients.length}</span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-2">
-                {recipe.ingredients.map((ing, i) => (
-                    <div 
-                        key={i} 
-                        onClick={() => toggleIngredient(i)}
-                        className={`group flex items-baseline gap-5 p-4 rounded-2xl transition-all duration-300 cursor-pointer border border-transparent ${checkedIngredients.has(i) ? 'opacity-40 grayscale bg-stone-100' : 'bg-white shadow-sm hover:border-rose-100'}`}
-                    >
-                        <span className={`font-brutal font-bold text-xs ${checkedIngredients.has(i) ? 'text-stone-400' : 'text-rose-400'}`}>
-                            {(i+1).toString().padStart(2, '0')}
-                        </span>
-                        <p className={`text-lg font-editorial italic group-hover:translate-x-1 transition-transform duration-300 ${checkedIngredients.has(i) ? 'line-through decoration-stone-300' : 'text-stone-800'}`}>
-                            {ing}
-                        </p>
-                        <div className={`ml-auto w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${checkedIngredients.has(i) ? 'bg-stone-400 border-stone-400' : 'border-stone-200'}`}>
-                            <Check size={12} className="text-white" />
-                        </div>
-                    </div>
-                ))}
-            </div>
-          </section>
-
-          {/* Instructions - "The Process" */}
-          <section id="instructions-start">
-             <h2 className="text-xs font-brutal font-black uppercase tracking-[0.2em] flex items-center gap-3 text-stone-400 mb-8">
-                {t('recipe_process')}
-                <span className="w-8 h-px bg-stone-300"></span>
-             </h2>
-
-             <div className="space-y-10 pl-2">
-                {recipe.instructions.map((step, idx) => {
-                    const isActive = cookingMode && idx === currentStep;
-                    const isDone = cookingMode && idx < currentStep;
-                    
-                    return (
-                        <div 
-                            key={idx} 
-                            id={`step-${recipe.id}-${idx}`}
-                            onClick={() => toggleStep(idx)}
-                            className={`
-                                relative pl-8 cursor-pointer group transition-all duration-700 ease-in-out
-                                ${cookingMode && !isActive ? 'opacity-30 scale-[0.98] blur-[1px]' : 'opacity-100 scale-100'}
-                                ${checkedSteps.has(idx) && !cookingMode ? 'opacity-40' : ''}
-                            `}
-                        >
-                            {/* Connection Line */}
-                            {idx !== recipe.instructions.length - 1 && (
-                                <div className="absolute left-[11px] top-8 bottom-[-40px] w-px bg-stone-200 group-hover:bg-rose-200 transition-colors" />
-                            )}
-
-                            {/* Timeline Node */}
-                            <div className={`
-                                absolute -left-[4px] top-1 w-8 h-8 rounded-full border-2 flex items-center justify-center text-[10px] font-brutal font-bold transition-all duration-500
-                                ${isActive ? 'bg-rose-500 border-rose-500 text-white scale-125 shadow-lg shadow-rose-200' : 'bg-white border-[#F9F8F6] ring-1 ring-stone-100 text-stone-400'}
-                                ${isDone ? 'bg-stone-900 border-stone-900 text-white' : ''}
-                                ${checkedSteps.has(idx) && !cookingMode ? 'bg-stone-900 text-white scale-90 border-stone-900' : ''}
-                            `}>
-                            {idx + 1}
-                            </div>
-                            
-                            <p className={`
-                                text-xl leading-relaxed font-light transition-all duration-500
-                                ${isActive ? 'text-stone-900 font-normal scale-[1.02] origin-left' : 'text-stone-800'}
-                                ${checkedSteps.has(idx) && !cookingMode ? 'line-through decoration-stone-300' : ''}
-                            `}>
-                                {step}
-                            </p>
-                        </div>
-                    );
-                })}
-             </div>
-          </section>
-
-          {/* Floating Action Buttons */}
-          <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-4 flex justify-center pointer-events-none">
-             
-             {/* 1. START COOKING BUTTON (Dismissible) */}
-             {!cookingMode && showStartButton && (
-                 <div className="relative pointer-events-auto animate-in slide-in-from-bottom-5 duration-500">
-                     <button 
-                        onClick={handleStartCooking}
-                        className="bg-stone-900 text-white pl-6 pr-8 py-4 rounded-full font-brutal font-bold uppercase tracking-[0.2em] text-[10px] flex items-center gap-3 shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 group ring-4 ring-white/50"
-                     >
-                        <span className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center group-hover:rotate-90 transition-transform duration-500">
-                            <PlayCircle size={16} className="text-rose-400 fill-current" />
-                        </span>
-                        {t('recipe_start_cooking')}
-                     </button>
-                     <button 
-                        onClick={() => setShowStartButton(false)}
-                        className="absolute -top-2 -right-2 bg-stone-200 text-stone-500 hover:bg-rose-500 hover:text-white rounded-full p-1.5 shadow-sm transition-colors"
-                     >
-                        <X size={12} />
-                     </button>
-                 </div>
-             )}
-
-             {/* 2. COOKING MODE CONTROLS */}
-             {cookingMode && (
-                 <div className="pointer-events-auto bg-stone-900/90 backdrop-blur-xl text-white p-2 rounded-full shadow-2xl flex items-center gap-2 ring-1 ring-white/20 animate-in slide-in-from-bottom-10 fade-in duration-500">
-                     <button 
-                        onClick={handlePrevStep}
-                        disabled={currentStep === 0}
-                        className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 flex items-center justify-center transition"
-                     >
-                        <ChevronLeft size={20} />
-                     </button>
-                     
-                     <div className="px-4 flex flex-col items-center">
-                         <span className="text-[10px] font-brutal font-bold uppercase tracking-widest text-stone-400">{t('recipe_step')}</span>
-                         <span className="text-xl font-editorial italic leading-none">{currentStep + 1}<span className="text-sm opacity-50 not-italic">/{recipe.instructions.length}</span></span>
-                     </div>
-
-                     <button 
-                        onClick={handleNextStep}
-                        className="w-12 h-12 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center transition shadow-lg shadow-rose-900/50"
-                     >
-                        {currentStep === recipe.instructions.length - 1 ? <Check size={20} /> : <ChevronRight size={20} />}
-                     </button>
-
-                     <div className="w-px h-8 bg-white/10 mx-1"></div>
-
-                     <button 
-                        onClick={handleExitCooking}
-                        className="w-10 h-10 rounded-full bg-transparent hover:bg-white/10 text-stone-400 hover:text-white flex items-center justify-center transition"
-                     >
-                        <X size={18} />
-                     </button>
-                 </div>
-             )}
-
-          </div>
-
+           {/* 3. START ACTION */}
+           <button 
+               onClick={handleStartCooking}
+               className="w-full bg-stone-900 text-white py-4 rounded-[1.5rem] font-brutal font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 shadow-xl shadow-stone-900/20 active:scale-95 transition-transform group"
+           >
+               <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-rose-500 transition-colors">
+                   <Play size={10} fill="currentColor" />
+               </div>
+               Start Cooking Mode
+           </button>
        </div>
+
     </div>
   );
 };
