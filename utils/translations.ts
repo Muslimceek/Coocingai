@@ -1,11 +1,10 @@
+
 export const translations = {
   en: {
     nav_fridge: "Fridge",
     nav_tracker: "Tracker",
     nav_profile: "Profile",
     nav_pantry: "Pantry",
-
-    // Onboarding
     onb_welcome_title: "Welcome to NourishHer",
     onb_welcome_desc: "Your personal AI companion for healthy eating, smart planning, and wellness.",
     onb_fridge_title: "Smart Kitchen",
@@ -17,19 +16,15 @@ export const translations = {
     onb_next: "Next",
     onb_start: "Get Started",
     onb_skip: "Skip",
-
-    // Onboarding Questions
     onb_q_name_title: "Let's get to know you",
     onb_q_name_desc: "What should we call you?",
     onb_q_name_placeholder: "Your Name",
-    
     onb_q_goals_title: "What brings you here?",
     onb_q_goals_desc: "Select all that apply",
     goal_weight: "Healthy Weight",
     goal_energy: "Boost Energy",
     goal_time: "Save Time",
     goal_skills: "Learn to Cook",
-    
     onb_q_diet_title: "Any dietary preferences?",
     onb_q_diet_desc: "We will tailor recipes to your needs",
     diet_none: "No Restrictions",
@@ -37,10 +32,7 @@ export const translations = {
     diet_vegan: "Vegan",
     diet_keto: "Keto",
     diet_gluten: "Gluten Free",
-    
     onb_finish_btn: "Start My Journey",
-
-    // Smart Fridge
     fridge_title: "Smart Kitchen",
     fridge_subtitle: "What's in your pantry today?",
     fridge_tab_gen: "Generator",
@@ -59,8 +51,6 @@ export const translations = {
     fridge_empty_desc: "Start by adding ingredients from your pantry or use the quick add options.",
     fridge_saved_empty: "No saved recipes yet",
     fridge_saved_empty_desc: "Generate delicious recipes and save them here for later access.",
-    
-    // Pantry / Inventory
     pantry_title: "My Pantry",
     pantry_subtitle: "Manage your stock & reduce waste",
     pantry_seasonal: "In Season Now",
@@ -75,16 +65,12 @@ export const translations = {
     pantry_scan_photo: "Snap Photo",
     pantry_analyzing: "AI is analyzing your product...",
     pantry_analyzing_error: "Could not identify product. Please enter manually.",
-    
-    // Pantry Item
     p_item_expired: "Expired",
     p_item_expiring: "Expiring soon",
     p_item_days: "days left",
     p_item_today: "Expires today",
     action_edit: "Edit",
     action_consume: "Consume",
-    
-    // Add Item Modal
     modal_add_item: "Add to Pantry",
     modal_edit_item: "Edit Item",
     lbl_name: "Item Name",
@@ -99,8 +85,6 @@ export const translations = {
     cat_other: "Other",
     btn_add: "Add Item",
     btn_update: "Update Item",
-
-    // Units
     unit_pcs: "pcs",
     unit_g: "g",
     unit_kg: "kg",
@@ -110,8 +94,6 @@ export const translations = {
     unit_tbsp: "tbsp",
     unit_tsp: "tsp",
     unit_pack: "pack",
-    
-    // Explore / Collections
     explore_trending: "Trending Now",
     explore_collections: "Curated Collections",
     explore_create_collection: "Create Collection",
@@ -130,8 +112,6 @@ export const translations = {
     recipe_cooked_x_times: "Cooked",
     recipe_times: "times",
     collection_empty_desc: "This collection is empty for now. Why not be the first to add your masterpiece here?",
-    
-    // Filters & Moods
     filter_cuisine: "Cuisine Style",
     filter_meal: "Meal Type",
     filter_mood: "Mood & Occasion",
@@ -147,15 +127,12 @@ export const translations = {
     meal_lunch: "Lunch",
     meal_dinner: "Dinner",
     meal_snack: "Snack",
-    
     mood_any: "Any Mood",
     mood_cozy: "Cozy & Comfort",
     mood_energetic: "Energy Boost",
     mood_romantic: "Romantic",
     mood_quick: "Super Quick",
     mood_celebration: "Celebration",
-
-    // Ingredients
     ing_eggs: "Eggs",
     ing_milk: "Milk",
     ing_chicken: "Chicken",
@@ -164,8 +141,6 @@ export const translations = {
     ing_tomatoes: "Tomatoes",
     ing_onion: "Onion",
     ing_cheese: "Cheese",
-
-    // Recipe Card
     recipe_time: "min",
     recipe_kcal: "kcal",
     recipe_easy: "Easy",
@@ -178,8 +153,6 @@ export const translations = {
     recipe_servings: "Servings",
     recipe_tips: "Chef's Tips",
     recipe_start_cooking: "Start Cooking",
-
-    // Tracker
     tracker_title: "Wellness Tracker",
     tracker_subtitle: "Daily hydration and nutrition insights",
     tracker_premium: "Premium",
@@ -194,33 +167,24 @@ export const translations = {
     tracker_weight_kg: "Weight (kg)",
     tracker_add_water: "Add Water",
     tracker_add_meal: "Add Meal",
-    
-    // Tracker Enhanced
     tracker_mood_title: "How do you feel today?",
     tracker_weight_title: "Body Weight",
     tracker_weight_current: "Current",
     tracker_weight_goal: "Target",
     tracker_update_goal: "Update Goal",
-    
-    // Tracker Modals
     modal_meal_title: "Log Your Meal",
     modal_meal_type: "Meal Type",
     modal_meal_cals: "Calories",
     modal_meal_add: "Log Intake",
-    
     mood_great: "Great",
     mood_good: "Good",
     mood_okay: "Okay",
     mood_tired: "Tired",
     mood_stressed: "Stressed",
-    
-    // Tracker Education Modals
     info_hydration_title: "Why Hydration Matters?",
     info_hydration_desc: "Proper hydration is crucial for women's health. It improves skin elasticity, boosts energy levels, and aids digestion. For women, staying hydrated also helps manage cycle-related symptoms and reduces bloating.",
     info_calories_title: "Understanding Nutrition",
     info_calories_desc: "Tracking isn't just about counting numbers—it's about fueling your body. A balanced intake ensures hormonal balance, sustained energy throughout the day, and supports your long-term wellness goals.",
-
-    // Profile & General
     profile_goals: "My Goals & Preferences",
     profile_edit: "Edit",
     profile_save: "Save Changes",
@@ -238,30 +202,24 @@ export const translations = {
     profile_settings: "App Settings",
     profile_language: "Language",
     profile_change_photo: "Change Photo",
-    
-    // Modals
     modal_sub_title: "Subscription Details",
     modal_sub_plan: "Current Plan",
     modal_sub_status: "Status",
     modal_sub_price: "Price",
     modal_sub_cancel: "Cancel Subscription",
     modal_sub_renew: "Renew Subscription",
-    
     modal_settings_title: "Application Settings",
     setting_push: "Push Notifications",
     setting_email: "Email Updates",
     setting_marketing: "Marketing Offers",
-    
     modal_help_title: "Contact Support",
     modal_help_placeholder: "Describe your issue...",
     modal_help_send: "Send Request",
     modal_help_success: "Message sent! We'll reply shortly.",
     modal_close: "Close",
-
     chat_welcome: "Hi! I'm your AI Chef. Need a substitution or a quick snack idea?",
     chat_placeholder: "Ask about recipes...",
     chat_title: "AI Chef Assistant",
-    
     toast_saved: "Profile updated successfully",
     toast_error: "An error occurred",
   },
@@ -270,8 +228,6 @@ export const translations = {
     nav_tracker: "Трекер",
     nav_profile: "Профиль",
     nav_pantry: "Кладовая",
-
-    // Onboarding
     onb_welcome_title: "Добро пожаловать в NourishHer",
     onb_welcome_desc: "Ваш личный AI-помощник для здорового питания и планирования.",
     onb_fridge_title: "Умная Кухня",
@@ -283,19 +239,15 @@ export const translations = {
     onb_next: "Далее",
     onb_start: "Начать",
     onb_skip: "Пропустить",
-
-    // Onboarding Questions
     onb_q_name_title: "Давайте познакомимся",
     onb_q_name_desc: "Как нам вас называть?",
     onb_q_name_placeholder: "Ваше имя",
-
     onb_q_goals_title: "Какая ваша главная цель?",
     onb_q_goals_desc: "Выберите все подходящее",
     goal_weight: "Здоровый вес",
     goal_energy: "Больше энергии",
     goal_time: "Экономия времени",
     goal_skills: "Научиться готовить",
-
     onb_q_diet_title: "Предпочтения в еде?",
     onb_q_diet_desc: "Мы подберем рецепты под вас",
     diet_none: "Нет ограничений",
@@ -303,10 +255,7 @@ export const translations = {
     diet_vegan: "Веганство",
     diet_keto: "Кето",
     diet_gluten: "Без глютена",
-
     onb_finish_btn: "Начать путешествие",
-
-    // Smart Fridge
     fridge_title: "Умная Кухня",
     fridge_subtitle: "Что есть в холодильнике?",
     fridge_tab_gen: "Генератор",
@@ -325,8 +274,6 @@ export const translations = {
     fridge_empty_desc: "Добавьте продукты из кладовой или выберите из списка ниже.",
     fridge_saved_empty: "Нет сохраненных рецептов",
     fridge_saved_empty_desc: "Создавайте вкусные рецепты и сохраняйте их здесь для быстрого доступа.",
-
-    // Pantry / Inventory
     pantry_title: "Моя Кладовая",
     pantry_subtitle: "Учет продуктов и сроков",
     pantry_seasonal: "Сезонные продукты",
@@ -341,16 +288,12 @@ export const translations = {
     pantry_scan_photo: "Фото",
     pantry_analyzing: "AI анализирует продукт...",
     pantry_analyzing_error: "Не удалось распознать. Введите вручную.",
-
-    // Pantry Item
     p_item_expired: "Истек срок",
     p_item_expiring: "Скоро истекает",
     p_item_days: "дней",
     p_item_today: "Истекает сегодня",
     action_edit: "Изменить",
     action_consume: "Съедено",
-
-    // Add Item Modal
     modal_add_item: "Добавить в кладовую",
     modal_edit_item: "Изменить продукт",
     lbl_name: "Название",
@@ -365,8 +308,6 @@ export const translations = {
     cat_other: "Другое",
     btn_add: "Добавить",
     btn_update: "Обновить",
-
-    // Units
     unit_pcs: "шт",
     unit_g: "г",
     unit_kg: "кг",
@@ -376,8 +317,6 @@ export const translations = {
     unit_tbsp: "ст.л.",
     unit_tsp: "ч.л.",
     unit_pack: "упак.",
-
-    // Explore / Collections
     explore_trending: "В тренде",
     explore_collections: "Тематические подборки",
     explore_create_collection: "Создать подборку",
@@ -396,8 +335,6 @@ export const translations = {
     recipe_cooked_x_times: "Приготовлено",
     recipe_times: "раз",
     collection_empty_desc: "Эта коллекция пока пуста. Почему бы не стать первой, кто добавит сюда свои шедевры?",
-
-    // Filters & Moods
     filter_cuisine: "Кухня",
     filter_meal: "Тип приема",
     filter_mood: "Настроение",
@@ -413,15 +350,12 @@ export const translations = {
     meal_lunch: "Обед",
     meal_dinner: "Ужин",
     meal_snack: "Перекус",
-    
     mood_any: "Любое",
     mood_cozy: "Уют и Комфорт",
     mood_energetic: "Заряд Энергии",
     mood_romantic: "Романтика",
     mood_quick: "Супер Быстро",
     mood_celebration: "Праздник",
-
-    // Ingredients
     ing_eggs: "Яйца",
     ing_milk: "Молоко",
     ing_chicken: "Курица",
@@ -430,8 +364,6 @@ export const translations = {
     ing_tomatoes: "Помидоры",
     ing_onion: "Лук",
     ing_cheese: "Сыр",
-
-    // Recipe Card
     recipe_time: "мин",
     recipe_kcal: "ккал",
     recipe_easy: "Легко",
@@ -444,8 +376,6 @@ export const translations = {
     recipe_servings: "Порций",
     recipe_tips: "Советы Шефа",
     recipe_start_cooking: "Начать готовку",
-
-    // Tracker
     tracker_title: "Трекер здоровья",
     tracker_subtitle: "Гидратация и питание",
     tracker_premium: "Премиум",
@@ -460,33 +390,24 @@ export const translations = {
     tracker_weight_kg: "Вес (кг)",
     tracker_add_water: "Добавить",
     tracker_add_meal: "Внести еду",
-    
-    // Tracker Enhanced
     tracker_mood_title: "Как настроение?",
     tracker_weight_title: "Вес тела",
     tracker_weight_current: "Текущий",
     tracker_weight_goal: "Цель",
     tracker_update_goal: "Изменить",
-    
-    // Tracker Modals
     modal_meal_title: "Внести прием пищи",
     modal_meal_type: "Тип приема",
     modal_meal_cals: "Калории",
     modal_meal_add: "Добавить",
-    
     mood_great: "Отлично",
     mood_good: "Хорошо",
     mood_okay: "Нормально",
     mood_tired: "Усталость",
     mood_stressed: "Стресс",
-
-    // Tracker Education
     info_hydration_title: "Зачем нужна вода?",
     info_hydration_desc: "Правильная гидратация критична для женского здоровья. Она улучшает кожу, энергию и пищеварение. Также вода помогает справляться с отеками и симптомами цикла.",
     info_calories_title: "Понимание питания",
     info_calories_desc: "Трекер — это не просто цифры, это топливо для организма. Баланс белков, жиров и углеводов обеспечивает гормональное здоровье и энергию на весь день.",
-
-    // Profile & General
     profile_goals: "Мои цели и предпочтения",
     profile_edit: "Изменить",
     profile_save: "Сохранить",
@@ -504,31 +425,144 @@ export const translations = {
     profile_settings: "Настройки приложения",
     profile_language: "Язык / Language",
     profile_change_photo: "Сменить фото",
-
-    // Modals
     modal_sub_title: "Детали подписки",
     modal_sub_plan: "Текущий план",
     modal_sub_status: "Статус",
     modal_sub_price: "Стоимость",
     modal_sub_cancel: "Отменить подписку",
     modal_sub_renew: "Продлить подписку",
-
     modal_settings_title: "Настройки приложения",
     setting_push: "Push-уведомления",
     setting_email: "Email рассылка",
     setting_marketing: "Маркетинговые предложения",
-
     modal_help_title: "Служба поддержки",
     modal_help_placeholder: "Опишите вашу проблему...",
     modal_help_send: "Отправить",
     modal_help_success: "Сообщение отправлено! Мы скоро ответим.",
     modal_close: "Закрыть",
-
     chat_welcome: "Привет! Я ваш AI Шеф. Нужна замена или идея перекуса?",
     chat_placeholder: "Спросите о рецептах...",
     chat_title: "AI Шеф-повар",
-
     toast_saved: "Профиль успешно обновлен",
     toast_error: "Произошла ошибка",
+  },
+  uz: {
+    nav_fridge: "Muzlatgich",
+    nav_tracker: "Treker",
+    nav_profile: "Profil",
+    nav_pantry: "Ombor",
+    fridge_title: "Aqlli Oshxona",
+    fridge_subtitle: "Muzlatgichda nima bor?",
+    fridge_greeting_morning: "Xayrli tong",
+    fridge_greeting_afternoon: "Xayrli kun",
+    fridge_greeting_evening: "Xayrli kech",
+    fridge_tab_gen: "Generator",
+    fridge_tab_explore: "Kashf qilish",
+    fridge_tab_saved: "Saqlanganlar",
+    fridge_placeholder: "masalan, Tovuq, Guruch...",
+    fridge_generate: "Retsept yaratish",
+    filter_cuisine: "Oshxona turi",
+    filter_meal: "Ovqat vaqti",
+    filter_mood: "Kayfiyat",
+    cuisine_any: "Har qanday",
+    cuisine_uzbek: "O'zbek",
+    cuisine_russian: "Rus",
+    cuisine_euro: "Yevropa",
+    cuisine_asian: "Osiyo",
+    pantry_title: "Mening Omborim",
+    pantry_add_btn: "Qo'shish",
+    profile_language: "Til / Language",
+    chat_welcome: "Salom! Men sizning AI oshpazingizman.",
+    onb_start: "Boshlash",
+  },
+  kk: {
+    nav_fridge: "Тоңазытқыш",
+    nav_tracker: "Трекер",
+    nav_profile: "Профиль",
+    nav_pantry: "Қойма",
+    fridge_title: "Ақылды Ас үй",
+    fridge_subtitle: "Тоңазытқышта не бар?",
+    fridge_greeting_morning: "Қайырлы таң",
+    fridge_greeting_afternoon: "Қайырлы күн",
+    fridge_greeting_evening: "Қайырлы кеш",
+    fridge_tab_gen: "Генератор",
+    fridge_tab_explore: "Шолу",
+    fridge_tab_saved: "Сақталған",
+    fridge_placeholder: "мысалы, Тауық, Күріш...",
+    fridge_generate: "Рецепт жасау",
+    filter_cuisine: "Асхана",
+    filter_meal: "Тамақ түрі",
+    filter_mood: "Көңіл-күй",
+    cuisine_any: "Кез келген",
+    cuisine_uzbek: "Өзбек",
+    cuisine_russian: "Орыс",
+    cuisine_euro: "Еуропалық",
+    cuisine_asian: "Азиялық",
+    cuisine_kazakh: "Қазақ",
+    pantry_title: "Менің Қоймам",
+    pantry_add_btn: "Қосу",
+    profile_language: "Тіл / Language",
+    chat_welcome: "Сәлем! Мен сіздің AI аспазшыңызбын.",
+    onb_start: "Бастау",
+  },
+  ky: {
+    nav_fridge: "Муздаткыч",
+    nav_tracker: "Трекер",
+    nav_profile: "Профиль",
+    nav_pantry: "Кампа",
+    fridge_title: "Акылдуу Ашкана",
+    fridge_subtitle: "Муздаткычта эмне бар?",
+    fridge_greeting_morning: "Кутман таң",
+    fridge_greeting_afternoon: "Кутман күн",
+    fridge_greeting_evening: "Кутман кеч",
+    fridge_tab_gen: "Генератор",
+    fridge_tab_explore: "Издөө",
+    fridge_tab_saved: "Сакталган",
+    fridge_placeholder: "мисалы, Тоок, Күрүч...",
+    fridge_generate: "Рецепт түзүү",
+    filter_cuisine: "Ашкана",
+    filter_meal: "Тамак түрү",
+    filter_mood: "Маанай",
+    cuisine_any: "Каалаган",
+    cuisine_uzbek: "Өзбек",
+    cuisine_russian: "Орус",
+    cuisine_euro: "Европа",
+    cuisine_asian: "Азия",
+    cuisine_kyrgyz: "Кыргыз",
+    pantry_title: "Менин Кампам",
+    pantry_add_btn: "Кошуу",
+    profile_language: "Тил / Language",
+    chat_welcome: "Салам! Мен сиздин AI ашпозчуңузмун.",
+    onb_start: "Баштоо",
+  },
+  tg: {
+    nav_fridge: "Яхдон",
+    nav_tracker: "Трекер",
+    nav_profile: "Профил",
+    nav_pantry: "Анбор",
+    fridge_title: "Ошхонаи ҳушманд",
+    fridge_subtitle: "Дар яхдон чӣ ҳаст?",
+    fridge_greeting_morning: "Субҳ ба хайр",
+    fridge_greeting_afternoon: "Рӯз ба хайр",
+    fridge_greeting_evening: "Шом ба хайр",
+    fridge_tab_gen: "Генератор",
+    fridge_tab_explore: "Ҷустуҷӯ",
+    fridge_tab_saved: "Захирашуда",
+    fridge_placeholder: "масалан, Мурғ, Биринҷ...",
+    fridge_generate: "Эҷоди рецепт",
+    filter_cuisine: "Ошхона",
+    filter_meal: "Навъи хӯрок",
+    filter_mood: "Табъ",
+    cuisine_any: "Ҳама",
+    cuisine_uzbek: "Ӯзбекӣ",
+    cuisine_russian: "Русӣ",
+    cuisine_euro: "Аврупоӣ",
+    cuisine_asian: "Осиёӣ",
+    cuisine_tajik: "Тоҷикӣ",
+    pantry_title: "Анбори ман",
+    pantry_add_btn: "Илова кардан",
+    profile_language: "Забон / Language",
+    chat_welcome: "Салом! Ман ошпази AI-и шумо ҳастам.",
+    onb_start: "Оғоз",
   }
 };

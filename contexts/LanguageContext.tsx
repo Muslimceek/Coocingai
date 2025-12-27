@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Language } from '../types';
 import { translations } from '../utils/translations';
 
@@ -12,11 +13,29 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+const STORAGE_KEY = 'nourishher_lang_pref';
+
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
+  // Initialize from storage or default to 'ru'
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      // Validate that the saved string is actually a valid Language
+      if (saved && ['en', 'ru', 'uz', 'kk', 'ky', 'tg'].includes(saved)) {
+        return saved as Language;
+      }
+    }
+    return 'ru'; // Default to Russian as requested
+  });
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    localStorage.setItem(STORAGE_KEY, lang);
+  };
 
   const t = (key: TranslationKey) => {
-    return translations[language][key] || translations['en'][key] || key;
+    const langDict = translations[language] || translations['en'];
+    return langDict[key] || translations['en'][key] || key;
   };
 
   return (

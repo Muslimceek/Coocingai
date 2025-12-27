@@ -1,7 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Compass, Heart } from 'lucide-react';
+import { Sparkles, Compass, Heart, Globe, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { generateRecipeFromIngredients, generateDishImage } from '../services/geminiService';
-import { GeneratedRecipe } from '../types';
+import { GeneratedRecipe, Language } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useUser } from '../contexts/UserContext';
 import GeneratorTab from './smart-fridge/GeneratorTab';
@@ -13,8 +15,17 @@ interface SmartFridgeProps {
   clearInitialIngredients?: () => void;
 }
 
+const languages = [
+  { code: 'ru', label: 'Русский', flag: '🇷🇺' },
+  { code: 'uz', label: 'Oʻzbek', flag: '🇺🇿' },
+  { code: 'en', label: 'English', flag: '🇺🇸' },
+  { code: 'kk', label: 'Қазақ', flag: '🇰🇿' },
+  { code: 'ky', label: 'Кыргыз', flag: '🇰🇬' },
+  { code: 'tg', label: 'Тоҷикӣ', flag: '🇹🇯' },
+];
+
 const SmartFridge: React.FC<SmartFridgeProps> = ({ initialIngredients, clearInitialIngredients }) => {
-  const { t, language } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   const { user, updateUser } = useUser();
   
   // State
@@ -24,6 +35,7 @@ const SmartFridge: React.FC<SmartFridgeProps> = ({ initialIngredients, clearInit
   const [loading, setLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
   const [timeGreeting, setTimeGreeting] = useState('');
+  const [showLangMenu, setShowLangMenu] = useState(false);
   
   // Handle Initial Ingredients from Pantry
   useEffect(() => {
@@ -102,17 +114,54 @@ const SmartFridge: React.FC<SmartFridgeProps> = ({ initialIngredients, clearInit
   };
 
   return (
-    <div className="pb-24 pt-6 px-4 md:px-8 max-w-4xl mx-auto animate-in fade-in duration-500">
+    <div className="pb-24 pt-6 px-4 md:px-8 max-w-4xl mx-auto animate-in fade-in duration-500 relative" onClick={() => setShowLangMenu(false)}>
       
-      {/* Header with Greeting */}
-      <div className="mb-8 flex items-center justify-between">
+      {/* Header with Greeting and Language Selector */}
+      <div className="mb-8 flex items-start justify-between">
           <div>
             <p className="text-rose-500 font-bold uppercase tracking-wide text-xs mb-1">{t('fridge_title')}</p>
             <h2 className="text-3xl font-bold text-stone-800">{timeGreeting}, {user.name.split(' ')[0]}!</h2>
             <p className="text-stone-500 mt-1">{t('fridge_subtitle')}</p>
           </div>
-          <div className="w-12 h-12 rounded-full bg-rose-100 p-1">
-              <img src={user.avatarUrl} alt="User" className="w-full h-full rounded-full object-cover" />
+          
+          <div className="flex items-center gap-3">
+             {/* Language Selector */}
+             <div className="relative z-50">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setShowLangMenu(!showLangMenu); }}
+                  className="flex items-center gap-1.5 bg-white border border-stone-200 shadow-sm px-3 py-2 rounded-full hover:bg-stone-50 transition-colors"
+                >
+                    <span className="text-lg">{languages.find(l => l.code === language)?.flag || '🌍'}</span>
+                    <span className="text-xs font-bold uppercase text-stone-600 hidden md:block">{language}</span>
+                    <ChevronDown size={14} className={`text-stone-400 transition-transform ${showLangMenu ? 'rotate-180' : ''}`} />
+                </button>
+                
+                <AnimatePresence>
+                  {showLangMenu && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute top-full right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden py-2"
+                    >
+                      {languages.map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => setLanguage(lang.code as Language)}
+                          className={`w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-stone-50 transition-colors ${language === lang.code ? 'bg-rose-50 text-rose-600' : 'text-stone-700'}`}
+                        >
+                          <span className="text-xl">{lang.flag}</span>
+                          <span className="text-sm font-bold">{lang.label}</span>
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+             </div>
+
+             <div className="w-12 h-12 rounded-full bg-rose-100 p-1">
+                <img src={user.avatarUrl} alt="User" className="w-full h-full rounded-full object-cover" />
+             </div>
           </div>
       </div>
 

@@ -1,4 +1,5 @@
-export type Language = 'en' | 'ru';
+
+export type Language = 'en' | 'ru' | 'uz' | 'kk' | 'ky' | 'tg';
 
 export interface SubscriptionDetails {
   plan: 'free' | 'premium';
