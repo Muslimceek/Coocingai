@@ -23,6 +23,9 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
   // UI Logic State
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState<PantryItem | null>(null);
+  
+  // View State (Linked to Header Widgets)
+  const [viewMode, setViewMode] = useState<'all' | 'expiring'>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -38,9 +41,23 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
 
   const processedItems = useMemo(() => {
     let items = user.pantry.filter(item => {
-        const matchesCat = filterCategory === 'all' || item.category === filterCategory;
+        // 1. Search Filter
         const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesCat && matchesSearch;
+        if (!matchesSearch) return false;
+
+        // 2. View Mode Filter (Header Widgets interaction)
+        if (viewMode === 'expiring') {
+            const d = getDaysUntilExpiry(item.expiryDate);
+            // Show items expiring in 3 days or less (including expired)
+            return d !== null && d <= 3;
+        }
+
+        // 3. Category Filter (only applies if viewMode is 'all')
+        if (filterCategory !== 'all') {
+            return item.category === filterCategory;
+        }
+
+        return true;
     });
 
     return items.sort((a, b) => {
@@ -49,7 +66,7 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
         if (!b.expiryDate) return -1;
         return new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime();
     });
-  }, [user.pantry, filterCategory, searchQuery]);
+  }, [user.pantry, filterCategory, searchQuery, viewMode]);
 
   const stats = useMemo(() => {
      const total = user.pantry.length;
@@ -114,14 +131,26 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
       
       <PantryHeader 
         stats={stats} 
-        onAddClick={handleOpenAdd} 
+        onAddClick={handleOpenAdd}
+        activeView={viewMode}
+        onViewChange={(mode) => {
+            vibrate();
+            setViewMode(mode);
+            // Reset category filter when switching modes for clarity
+            if(mode === 'expiring') setFilterCategory('all');
+        }}
       />
 
       <PantryFilters 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         filterCategory={filterCategory}
-        setFilterCategory={setFilterCategory}
+        setFilterCategory={(cat) => {
+            vibrate();
+            setFilterCategory(cat);
+            setViewMode('all'); // Switching category resets "Expiring Only" mode
+        }}
+        activeView={viewMode}
       />
 
       <PantryList 
@@ -131,7 +160,7 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
 
       {/* Floating Cook Bar */}
       <AnimatePresence>
-          {user.pantry.length > 2 && (
+          {user.pantry.length > 2 && viewMode === 'all' && (
              <motion.div 
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}

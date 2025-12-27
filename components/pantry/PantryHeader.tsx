@@ -12,9 +12,11 @@ interface PantryHeaderProps {
     ecoScore: number;
   };
   onAddClick: () => void;
+  activeView: 'all' | 'expiring';
+  onViewChange: (mode: 'all' | 'expiring') => void;
 }
 
-const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick }) => {
+const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick, activeView, onViewChange }) => {
   const { t } = useLanguage();
 
   // Circle config
@@ -30,7 +32,7 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick }) => {
   const scoreGradientId = isExcellent ? "gradExcel" : isCritical ? "gradCrit" : "gradNorm";
 
   return (
-    <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-700 font-sans">
+    <div className="mb-4 animate-in fade-in slide-in-from-top-4 duration-700 font-sans">
       
       {/* 1. TITLE & DATE */}
       <div className="flex justify-between items-end mb-6 px-1">
@@ -54,7 +56,7 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick }) => {
       {/* 2. DASHBOARD GRID (Asymmetric) */}
       <div className="grid grid-cols-2 gap-3 h-[260px]">
         
-        {/* A. ECO SCORE (Dark Premium Card) */}
+        {/* A. ECO SCORE (Dark Premium Card - Informational) */}
         <div className="col-span-1 bg-stone-900 rounded-[2.5rem] p-5 relative overflow-hidden flex flex-col items-center justify-between shadow-2xl shadow-stone-200">
              {/* Gradient Orb Background */}
              <div className="absolute top-[-50%] right-[-50%] w-[150%] h-[150%] bg-gradient-to-br from-emerald-500/20 to-transparent rounded-full blur-3xl pointer-events-none" />
@@ -106,18 +108,28 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick }) => {
              </div>
         </div>
 
-        {/* B. RIGHT COLUMN */}
+        {/* B. RIGHT COLUMN - INTERACTIVE WIDGETS */}
         <div className="col-span-1 flex flex-col gap-3">
             
-            {/* B1. EXPIRING (State-Aware) */}
-            <div className={`flex-1 rounded-[2.5rem] p-5 relative overflow-hidden flex flex-col justify-between transition-all duration-500 border ${stats.expiring > 0 ? 'bg-orange-50 border-orange-200' : 'bg-white border-stone-100 shadow-sm'}`}>
-                <div className="flex justify-between items-start">
-                    <span className={`text-[9px] font-brutal font-bold uppercase tracking-wider ${stats.expiring > 0 ? 'text-orange-600' : 'text-stone-400'}`}>
+            {/* B1. EXPIRING (Clickable Filter) */}
+            <button 
+                onClick={() => onViewChange(activeView === 'expiring' ? 'all' : 'expiring')}
+                className={`
+                    flex-1 rounded-[2.5rem] p-5 relative overflow-hidden flex flex-col justify-between transition-all duration-300 text-left border-2
+                    ${activeView === 'expiring' 
+                        ? 'bg-orange-500 text-white border-orange-500 shadow-xl shadow-orange-200 scale-[1.02]' 
+                        : stats.expiring > 0 
+                            ? 'bg-orange-50 border-orange-100' 
+                            : 'bg-white border-stone-100 shadow-sm'}
+                `}
+            >
+                <div className="flex justify-between items-start w-full">
+                    <span className={`text-[9px] font-brutal font-bold uppercase tracking-wider ${activeView === 'expiring' ? 'text-white/80' : stats.expiring > 0 ? 'text-orange-600' : 'text-stone-400'}`}>
                         {t('p_item_expiring')}
                     </span>
                     {stats.expiring > 0 ? (
-                        <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center animate-pulse">
-                            <AlertTriangle size={12} className="text-orange-600" />
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center animate-pulse ${activeView === 'expiring' ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600'}`}>
+                            <AlertTriangle size={12} />
                         </div>
                     ) : (
                         <CheckCircle2 size={16} className="text-emerald-500" />
@@ -125,26 +137,36 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick }) => {
                 </div>
                 
                 <div className="mt-auto">
-                    <span className={`text-4xl font-editorial italic leading-none block mb-1 ${stats.expiring > 0 ? 'text-orange-600' : 'text-stone-900'}`}>
+                    <span className={`text-4xl font-editorial italic leading-none block mb-1 ${activeView === 'expiring' ? 'text-white' : stats.expiring > 0 ? 'text-orange-600' : 'text-stone-900'}`}>
                         {stats.expiring}
                     </span>
-                    <span className="text-[10px] font-bold text-stone-400">
-                        {stats.expiring > 0 ? 'Items need attention' : 'All fresh & good'}
+                    <span className={`text-[10px] font-bold ${activeView === 'expiring' ? 'text-white/80' : 'text-stone-400'}`}>
+                        {activeView === 'expiring' ? 'Tap to clear' : stats.expiring > 0 ? 'Tap to view' : 'All fresh'}
                     </span>
                 </div>
-            </div>
+            </button>
 
-            {/* B2. TOTAL STOCK */}
-            <div className="flex-1 bg-white border border-stone-100 rounded-[2.5rem] p-5 shadow-sm flex flex-col justify-center relative overflow-hidden group">
-                <div className="absolute right-[-10px] top-[-10px] opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
+            {/* B2. TOTAL STOCK (Clickable Reset) */}
+            <button 
+                onClick={() => onViewChange('all')}
+                className={`
+                    flex-1 rounded-[2.5rem] p-5 shadow-sm flex flex-col justify-center relative overflow-hidden group text-left transition-all duration-300 border
+                    ${activeView === 'all' 
+                        ? 'bg-stone-900 text-white border-stone-900' 
+                        : 'bg-white text-stone-900 border-stone-100 hover:border-stone-200'}
+                `}
+            >
+                <div className={`absolute right-[-10px] top-[-10px] opacity-5 group-hover:opacity-10 transition-opacity rotate-12 ${activeView === 'all' ? 'text-white' : 'text-stone-900'}`}>
                     <Package size={80} />
                 </div>
-                <span className="text-[9px] font-brutal font-bold uppercase tracking-wider text-stone-400 mb-1">{t('pantry_section_all')}</span>
+                <span className={`text-[9px] font-brutal font-bold uppercase tracking-wider mb-1 ${activeView === 'all' ? 'text-stone-400' : 'text-stone-400'}`}>
+                    {t('pantry_section_all')}
+                </span>
                 <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-editorial italic text-stone-900">{stats.total}</span>
-                    <span className="text-xs font-bold text-stone-300">items</span>
+                    <span className="text-3xl font-editorial italic">{stats.total}</span>
+                    <span className={`text-xs font-bold ${activeView === 'all' ? 'text-stone-500' : 'text-stone-300'}`}>items</span>
                 </div>
-            </div>
+            </button>
 
         </div>
 
