@@ -80,7 +80,6 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64String = reader.result as string;
-        // Call service. It returns null if error or NO KEY.
         const analysis = await identifyPantryItem(base64String, language);
         
         if (analysis) {
@@ -91,7 +90,6 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
           if (analysis.calories) setCalories(analysis.calories.toString());
           if (analysis.expiryDate) setExpiry(analysis.expiryDate);
         } else {
-          // If no key or error, we alert instead of filling with "Apple"
           alert("AI Scan failed or API Key is missing. Please enter details manually.");
         }
         setIsAnalyzing(false);
@@ -138,7 +136,7 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
                   transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
                   className="w-20 h-20 border-4 border-rose-100 border-t-rose-500 rounded-full mb-4"
                 />
-                <h4 className="font-editorial italic text-xl animate-pulse">{t('pantry_analyzing')}</h4>
+                <h4 className="font-editorial italic text-xl animate-pulse text-stone-900">{t('pantry_analyzing')}</h4>
               </div>
             )}
 

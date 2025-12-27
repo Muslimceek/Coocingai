@@ -1,12 +1,11 @@
 
 import React, { useState, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Utensils } from 'lucide-react';
+import { ArrowRight, Utensils, ChefHat, ScanLine } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useUser } from '../contexts/UserContext';
 import { PantryItem } from '../types';
 
-// Explicit Imports to prevent "default export" errors if bundler configuration is strict
 import PantryHeader from './pantry/PantryHeader';
 import PantryFilters from './pantry/PantryFilters';
 import PantryList from './pantry/PantryList';
@@ -24,7 +23,7 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState<PantryItem | null>(null);
   
-  // View State (Linked to Header Widgets)
+  // View State
   const [viewMode, setViewMode] = useState<'all' | 'expiring'>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -45,14 +44,13 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
         const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
         if (!matchesSearch) return false;
 
-        // 2. View Mode Filter (Header Widgets interaction)
+        // 2. View Mode Filter
         if (viewMode === 'expiring') {
             const d = getDaysUntilExpiry(item.expiryDate);
-            // Show items expiring in 3 days or less (including expired)
             return d !== null && d <= 3;
         }
 
-        // 3. Category Filter (only applies if viewMode is 'all')
+        // 3. Category Filter
         if (filterCategory !== 'all') {
             return item.category === filterCategory;
         }
@@ -60,11 +58,11 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
         return true;
     });
 
+    // Smart Sort: Expiring Soon -> Categories -> Alphabetical
     return items.sort((a, b) => {
-        // Sort by expiry urgency first
-        if (!a.expiryDate) return 1;
-        if (!b.expiryDate) return -1;
-        return new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime();
+        const da = getDaysUntilExpiry(a.expiryDate) ?? 999;
+        const db = getDaysUntilExpiry(b.expiryDate) ?? 999;
+        return da - db;
     });
   }, [user.pantry, filterCategory, searchQuery, viewMode]);
 
@@ -79,38 +77,39 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
          return d !== null && d < 0;
      }).length;
      
-     // Eco Score Calculation
+     // Eco Score: Starts at 100, penalized by expired/expiring
      const ecoScore = Math.max(0, 100 - (expired * 15) - (expiring * 5));
      return { total, expiring, expired, ecoScore };
   }, [user.pantry]);
 
   // --- Handlers ---
 
-  const vibrate = () => {
-    if(navigator.vibrate) navigator.vibrate(10);
+  const vibrate = (pattern: number | number[] = 10) => {
+    if(typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern);
   }
 
   const handleOpenAdd = () => {
-    vibrate();
+    vibrate(15);
     setEditingItem(null);
     setShowModal(true);
   };
 
   const handleOpenEdit = (item: PantryItem) => {
-    vibrate();
+    vibrate(10);
     setEditingItem(item);
     setShowModal(true);
   };
 
   const handleSaveItem = (itemData: Partial<PantryItem>) => {
-    vibrate();
+    vibrate([10, 30]);
     const newItem: PantryItem = {
       id: editingItem ? editingItem.id : Date.now().toString(),
       name: itemData.name!,
       quantity: itemData.quantity!,
       unit: itemData.unit!,
       expiryDate: itemData.expiryDate,
-      category: itemData.category
+      category: itemData.category,
+      calories: itemData.calories
     };
 
     if (editingItem) {
@@ -122,72 +121,87 @@ const PantryScreen: React.FC<PantryScreenProps> = ({ onCookWithPantry }) => {
   };
 
   const handleDeleteItem = (id: string) => {
-    vibrate();
+    vibrate([20, 50]);
     updateUser({ pantry: user.pantry.filter(item => item.id !== id) });
     setShowModal(false);
   };
 
+  // Quick Consume (from list)
+  const handleConsumeItem = (id: string) => {
+    vibrate([50]); // Heavy mechanical thud
+    updateUser({ pantry: user.pantry.filter(item => item.id !== id) });
+  };
+
   return (
-    <div className="min-h-screen pb-32 pt-6 px-4 md:px-6 relative font-sans">
+    <div className="min-h-screen pb-32 pt-6 px-4 md:px-6 relative font-sans overflow-x-hidden">
       
-      {/* Dashboard Header */}
+      {/* Background Atmosphere */}
+      <div className="fixed inset-0 bg-gradient-to-b from-[#F9F8F6] to-stone-100 pointer-events-none -z-10" />
+      <div className="fixed top-0 left-0 right-0 h-64 bg-gradient-to-b from-rose-50/50 to-transparent pointer-events-none -z-10" />
+
+      {/* 1. DIGITAL TWIN DASHBOARD */}
       <PantryHeader 
         stats={stats} 
         onAddClick={handleOpenAdd}
         activeView={viewMode}
         onViewChange={(mode) => {
-            vibrate();
+            vibrate(10);
             setViewMode(mode);
             if(mode === 'expiring') setFilterCategory('all');
         }}
       />
 
-      {/* Filter Bar */}
+      {/* 2. MORPHING FILTERS */}
       <PantryFilters 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         filterCategory={filterCategory}
         setFilterCategory={(cat) => {
-            vibrate();
+            vibrate(5);
             setFilterCategory(cat);
             setViewMode('all');
         }}
         activeView={viewMode}
       />
 
-      {/* Item Grid */}
+      {/* 3. MASONRY GRID INVENTORY */}
       <PantryList 
         items={processedItems}
         onItemClick={handleOpenEdit}
+        onConsume={handleConsumeItem}
       />
 
-      {/* Floating 'Cook with Pantry' Action Button */}
-      {/* Logic: Only show if we have items and are in default view */}
+      {/* 4. FLOATING 'CHEF MODE' DOCK */}
       <AnimatePresence>
           {user.pantry.length > 2 && viewMode === 'all' && (
              <motion.div 
-                initial={{ y: 100, opacity: 0 }}
+                initial={{ y: 150, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 100, opacity: 0 }}
+                exit={{ y: 150, opacity: 0 }}
+                transition={{ type: "spring", damping: 20 }}
                 className="fixed bottom-28 left-4 right-4 z-30 pointer-events-none flex justify-center"
              >
                 <button 
-                   onClick={() => { vibrate(); onCookWithPantry(user.pantry.map(i => i.name)); }}
-                   className="pointer-events-auto w-full max-w-md bg-stone-900/90 backdrop-blur-md text-white p-4 rounded-[2rem] shadow-2xl flex items-center justify-between group border border-white/20 transition-all hover:scale-[1.02] active:scale-95 hover:bg-stone-800"
+                   onClick={() => { vibrate([10, 50]); onCookWithPantry(user.pantry.map(i => i.name)); }}
+                   className="pointer-events-auto w-full max-w-sm bg-stone-900/90 backdrop-blur-xl text-white p-2 rounded-[2.5rem] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] flex items-center justify-between group border border-white/20 transition-all hover:scale-[1.02] active:scale-95 pr-3 pl-3"
                 >
-                   <div className="flex items-center gap-4">
-                       <div className="w-10 h-10 rounded-full bg-rose-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-rose-900/40">
-                          <Utensils size={18} />
+                   <div className="flex items-center gap-3">
+                       <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-rose-500 to-orange-500 flex items-center justify-center shadow-lg shadow-rose-900/30 group-hover:rotate-12 transition-transform">
+                          <ChefHat size={20} className="text-white" />
                        </div>
-                       <div className="text-left">
-                           <span className="block text-sm font-bold">{t('pantry_cook_btn')}</span>
-                           <span className="text-[10px] text-stone-400 uppercase tracking-wider font-brutal">
-                              {user.pantry.length} {t('explore_items')} Available
+                       <div className="text-left flex flex-col">
+                           <span className="text-sm font-bold leading-tight">{t('pantry_cook_btn')}</span>
+                           <span className="text-[10px] text-stone-400 font-brutal uppercase tracking-wider">
+                              {user.pantry.length} items ready
                            </span>
                        </div>
                    </div>
-                   <div className="bg-white/10 rounded-full p-2 group-hover:bg-white/20 transition-colors">
-                       <ArrowRight size={16} />
+                   
+                   <div className="flex items-center gap-2">
+                       <div className="h-8 w-[1px] bg-white/20" />
+                       <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-stone-900 transition-colors">
+                           <ArrowRight size={18} />
+                       </div>
                    </div>
                 </button>
              </motion.div>

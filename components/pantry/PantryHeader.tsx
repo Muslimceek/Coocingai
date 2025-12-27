@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Leaf, AlertTriangle, Plus, Scan, Package, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Leaf, AlertTriangle, Package, CheckCircle2, Scan } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 
@@ -20,7 +20,7 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick, activeVi
   const { t } = useLanguage();
 
   // Circle config
-  const radius = 40;
+  const radius = 42;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (stats.ecoScore / 100) * circumference;
   
@@ -32,7 +32,7 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick, activeVi
   const scoreGradientId = isExcellent ? "gradExcel" : isCritical ? "gradCrit" : "gradNorm";
 
   return (
-    <div className="mb-4 animate-in fade-in slide-in-from-top-4 duration-700 font-sans">
+    <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-700 font-sans">
       
       {/* 1. TITLE & DATE */}
       <div className="flex justify-between items-end mb-6 px-1">
@@ -53,22 +53,27 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick, activeVi
         </div>
       </div>
 
-      {/* 2. DASHBOARD GRID (Asymmetric) */}
-      <div className="grid grid-cols-2 gap-3 h-[260px]">
+      {/* 2. DASHBOARD GRID (Asymmetric Bento) */}
+      <div className="grid grid-cols-2 gap-3 h-[280px]">
         
-        {/* A. ECO SCORE (Dark Premium Card - Informational) */}
-        <div className="col-span-1 bg-stone-900 rounded-[2.5rem] p-5 relative overflow-hidden flex flex-col items-center justify-between shadow-2xl shadow-stone-200">
+        {/* A. ECO SCORE HERO (Dark Mode Glass) */}
+        <div className="col-span-1 bg-[#1C1917] rounded-[2.5rem] p-5 relative overflow-hidden flex flex-col items-center justify-between shadow-2xl shadow-stone-300/50 group border border-stone-800">
              {/* Gradient Orb Background */}
-             <div className="absolute top-[-50%] right-[-50%] w-[150%] h-[150%] bg-gradient-to-br from-emerald-500/20 to-transparent rounded-full blur-3xl pointer-events-none" />
+             <div className={`absolute top-[-50%] right-[-50%] w-[150%] h-[150%] bg-gradient-to-br ${isExcellent ? 'from-emerald-500/20' : 'from-rose-500/20'} to-transparent rounded-full blur-3xl pointer-events-none transition-colors duration-1000`} />
              
              <div className="w-full flex justify-between items-start z-10">
                  <span className="text-white/60 text-[10px] font-brutal font-bold uppercase tracking-widest">Eco Score</span>
-                 <Leaf size={16} className={isExcellent ? "text-emerald-400" : "text-stone-400"} />
+                 <motion.div 
+                    animate={isExcellent ? { rotate: [0, 10, 0] } : { scale: [1, 1.1, 1] }}
+                    transition={{ repeat: Infinity, duration: 4 }}
+                 >
+                    <Leaf size={16} className={isExcellent ? "text-emerald-400" : "text-stone-400"} />
+                 </motion.div>
              </div>
 
-             <div className="relative w-32 h-32 flex items-center justify-center z-10 my-2">
+             <div className="relative w-36 h-36 flex items-center justify-center z-10 my-2">
                  {/* Progress Circle */}
-                 <svg className="w-full h-full transform -rotate-90 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                 <svg className="w-full h-full transform -rotate-90 drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                      <defs>
                         <linearGradient id="gradExcel" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor="#34d399" />
@@ -83,11 +88,11 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick, activeVi
                             <stop offset="100%" stopColor="#e11d48" />
                         </linearGradient>
                      </defs>
-                     <circle cx="64" cy="64" r={radius} stroke="#333" strokeWidth="6" fill="none" />
+                     <circle cx="72" cy="72" r={radius} stroke="#333" strokeWidth="8" fill="none" className="opacity-50" />
                      <motion.circle 
-                        cx="64" cy="64" r={radius} 
+                        cx="72" cy="72" r={radius} 
                         stroke={`url(#${scoreGradientId})`}
-                        strokeWidth="6" 
+                        strokeWidth="8" 
                         fill="none" 
                         strokeDasharray={circumference}
                         initial={{ strokeDashoffset: circumference }}
@@ -97,13 +102,13 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick, activeVi
                      />
                  </svg>
                  <div className="absolute flex flex-col items-center">
-                     <span className="text-4xl font-editorial italic font-bold text-white">{stats.ecoScore}</span>
+                     <span className="text-5xl font-editorial italic font-bold text-white tracking-tight">{stats.ecoScore}</span>
                  </div>
              </div>
              
              <div className="z-10 bg-white/10 backdrop-blur-md rounded-full px-3 py-1 border border-white/10">
                  <span className="text-[9px] font-brutal font-bold text-white uppercase tracking-wider">
-                    {isExcellent ? 'Excellent' : isCritical ? 'Action Needed' : 'Good'}
+                    {isExcellent ? 'Excellent' : isCritical ? 'Critical' : 'Good'}
                  </span>
              </div>
         </div>
@@ -115,11 +120,11 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick, activeVi
             <button 
                 onClick={() => onViewChange(activeView === 'expiring' ? 'all' : 'expiring')}
                 className={`
-                    flex-1 rounded-[2.5rem] p-5 relative overflow-hidden flex flex-col justify-between transition-all duration-300 text-left border-2
+                    flex-1 rounded-[2.5rem] p-5 relative overflow-hidden flex flex-col justify-between transition-all duration-300 text-left border
                     ${activeView === 'expiring' 
-                        ? 'bg-orange-500 text-white border-orange-500 shadow-xl shadow-orange-200 scale-[1.02]' 
+                        ? 'bg-rose-500 text-white border-rose-500 shadow-xl shadow-rose-200 scale-[1.02]' 
                         : stats.expiring > 0 
-                            ? 'bg-orange-50 border-orange-100' 
+                            ? 'bg-orange-50 border-orange-200' 
                             : 'bg-white border-stone-100 shadow-sm'}
                 `}
             >
@@ -152,19 +157,19 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick, activeVi
                 className={`
                     flex-1 rounded-[2.5rem] p-5 shadow-sm flex flex-col justify-center relative overflow-hidden group text-left transition-all duration-300 border
                     ${activeView === 'all' 
-                        ? 'bg-stone-900 text-white border-stone-900' 
-                        : 'bg-white text-stone-900 border-stone-100 hover:border-stone-200'}
+                        ? 'bg-white border-stone-200' 
+                        : 'bg-stone-50 text-stone-400 border-stone-100 hover:border-stone-200'}
                 `}
             >
-                <div className={`absolute right-[-10px] top-[-10px] opacity-5 group-hover:opacity-10 transition-opacity rotate-12 ${activeView === 'all' ? 'text-white' : 'text-stone-900'}`}>
+                <div className="absolute right-[-10px] top-[-10px] opacity-5 group-hover:opacity-10 transition-opacity rotate-12 text-stone-900">
                     <Package size={80} />
                 </div>
-                <span className={`text-[9px] font-brutal font-bold uppercase tracking-wider mb-1 ${activeView === 'all' ? 'text-stone-400' : 'text-stone-400'}`}>
+                <span className={`text-[9px] font-brutal font-bold uppercase tracking-wider mb-1 text-stone-400`}>
                     {t('pantry_section_all')}
                 </span>
                 <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-editorial italic">{stats.total}</span>
-                    <span className={`text-xs font-bold ${activeView === 'all' ? 'text-stone-500' : 'text-stone-300'}`}>items</span>
+                    <span className="text-3xl font-editorial italic text-stone-900">{stats.total}</span>
+                    <span className="text-xs font-bold text-stone-500">items</span>
                 </div>
             </button>
 
@@ -175,11 +180,8 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick, activeVi
       {/* 3. COMMAND BAR (Floating Action) */}
       <div className="mt-4">
         <button 
-            onClick={() => {
-                if(navigator.vibrate) navigator.vibrate(10);
-                onAddClick();
-            }}
-            className="w-full group relative overflow-hidden bg-white rounded-[2rem] p-2 shadow-[0_10px_30px_rgba(0,0,0,0.08)] border border-stone-100 active:scale-[0.98] transition-all duration-300"
+            onClick={onAddClick}
+            className="w-full group relative overflow-hidden bg-white rounded-[2rem] p-2 shadow-[0_15px_30px_rgba(0,0,0,0.06)] border border-stone-100 active:scale-[0.98] transition-all duration-300 hover:shadow-lg hover:border-rose-100"
         >
             <div className="flex items-center justify-between pl-6 pr-2 py-3">
                  <div className="flex flex-col items-start">
@@ -187,7 +189,7 @@ const PantryHeader: React.FC<PantryHeaderProps> = ({ stats, onAddClick, activeVi
                      <span className="text-[9px] font-brutal font-bold uppercase tracking-wider text-stone-400">Scan code or manual entry</span>
                  </div>
                  
-                 <div className="h-12 w-16 bg-stone-900 rounded-[1.5rem] flex items-center justify-center text-white relative overflow-hidden">
+                 <div className="h-12 w-20 bg-stone-900 rounded-[1.5rem] flex items-center justify-center text-white relative overflow-hidden shadow-lg shadow-stone-900/20">
                      <div className="absolute inset-0 bg-gradient-to-r from-stone-800 to-stone-900" />
                      <Scan size={20} className="relative z-10 group-hover:scale-110 transition-transform" />
                      {/* Scanning Line Animation */}
