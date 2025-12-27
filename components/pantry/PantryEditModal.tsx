@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Scan, Barcode, Calendar, Trash2, Leaf, Milk, Drumstick, Cookie, Tag } from 'lucide-react';
+import { X, Scan, QrCode, Calendar, Trash2, Leaf, Milk, Drumstick, Cookie, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PantryItem } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -160,7 +160,7 @@ const PantryEditModal: React.FC<PantryEditModalProps> = ({
                    onClick={() => { if(navigator.vibrate) navigator.vibrate(10); fileInputRef.current?.click(); }}
                    className="flex-1 bg-white border border-stone-200 text-stone-600 py-4 rounded-2xl flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform"
                 >
-                  <Barcode size={24} />
+                  <QrCode size={24} />
                   <span className="text-[10px] font-brutal font-bold uppercase tracking-widest">{t('pantry_scan_barcode')}</span>
                 </button>
               </div>
